@@ -6,11 +6,14 @@ import { Change_Password } from "./pages/Change_password";
 // import { Service } from "./pages/Service";
 import { Register } from "./pages/Register";
 import { Login } from "./pages/Login";
+import { Navbar } from "./components/Navbar";
+import "./App.css";
 
 const App = () => {
   return <>
   
   <BrowserRouter>
+  {/* <Navbar /> */}
   <Routes>
     <Route path="/home" element={<Home />} />
     <Route path="/change_pass" element={<Change_Password />} /> 
