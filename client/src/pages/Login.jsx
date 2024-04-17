@@ -1,3 +1,5 @@
+
+
 export const Login = ()=> {
     return <section className="login-content">
     <div className="login-content-lt"></div>
@@ -5,7 +7,7 @@ export const Login = ()=> {
       <div className="login-box">
       <form className="login-form" action="#">
         <div className="logo-wrapper">
-          <img src="images/logo.svg" alt="Rishabh Software"/>
+          <img src="src/assets/images/logo.svg" alt="Rishabh Software"/>
           <span>Meal Facility</span>
         </div>
         <h3 className="login-head">Sign in to your account</h3>
