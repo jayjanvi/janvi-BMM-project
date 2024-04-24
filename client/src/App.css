@@ -1,5 +1,6 @@
-/* main.css */
 @charset "UTF-8";
+@import url(react-toastify/dist/ReactToastify.css);
+
 /*!
  * Vali Admin
  * Author: Pratik Borsadiya
@@ -7,8 +8,8 @@
 @import url(https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap);
 @font-face {
   font-family: "meal-admin";
-  src: url("../fonts/meal-admin.eot?b7a8ot");
-  src: url("../fonts/meal-admin.eot?b7a8ot#iefix") format("embedded-opentype"), url("../fonts/meal-admin.ttf?b7a8ot") format("truetype"), url("../fonts/meal-admin.woff?b7a8ot") format("woff"), url("../fonts/meal-admin.svg?b7a8ot#meal-admin") format("svg");
+  src: url("./assets/fonts/meal-admin.eot?b7a8ot");
+  src: url("./assets/fonts/meal-admin.eot?b7a8ot#iefix") format("embedded-opentype"), url("./assets/fonts/meal-admin.ttf?b7a8ot") format("truetype"), url("./assets/fonts/meal-admin.woff?b7a8ot") format("woff"), url("./assets/fonts/meal-admin.svg?b7a8ot#meal-admin") format("svg");
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -11049,8 +11050,8 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding;
   background-clip: padding-box;
-  *border-right-width: 2px;
-  *border-bottom-width: 2px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
   color: #333333;
   font-size: 13px;
   line-height: 1.42857143;
@@ -11972,7 +11973,17 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 .field-icon {
   float: right;
   margin-left: -25px;
-  margin-top: -33px;
+  margin-top: -37px;
+  position: relative;
+  z-index: 2;
+  padding-right: 18px;
+  font-size: 20px;
+}
+
+.field-icon-password {
+  float: right;
+  margin-left: -25px;
+  margin-top: -27px;
   position: relative;
   z-index: 2;
   padding-right: 18px;
@@ -12607,6 +12618,32 @@ img {
   opacity: 0;
   transform: scale(0);
 }
+
+
+/* =========================== error page css code*/
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.error-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #e74c3c; /* Red color for error title */
+}
+
+.error-message {
+  font-size: 1.2rem;
+  color: #555; /* Dark gray color for error message */
+}
+
+/* You can add more styles as needed */
+
+
 
 /*==============================*/
 .form-group .search-wrapper {

@@ -8,49 +8,36 @@ const bcrypt = require("bcrypt");
 const clientURL = process.env.CLIENT_URL;
 const bcryptSalt = process.env.BCRYPT_SALT;
 
-// User Registration
-const signup = async (data) => {
-  try {
-    const { username, email, phone, password } = data;
-
-    const userExist = await User.findOne({ email });
-    if (userExist) {
-      throw new Error("Email already exist", 422);
-    }
-    const userCreated = await User.create({ username, email, phone, password });
-
-    return (data = {
-      msg: "Registration successful",
-      username: username,
-      userId: userCreated._id.toString(),
-      token: await userCreated.generateToken(),
-    });
-  } catch (error) {
-    throw new Error(error, 500);
-  }
-};
-
-//Login User
+// Login User
 const loginUser = async (data) => {
   try {
     const { email, password } = data;
     const userExist = await User.findOne({ email });
     if (!userExist) {
-      throw new Error("Invalid credentials", 400);
+      throw new Error("Invalid email or password", 400);
     }
-    const user = await userExist.comparePassword(password);
-    if (user) {
-      return (data = {
-        message: "Login Successful",
-        username: userExist.username,
-        userId: userExist._id.toString(),
-        token: await userExist.generateToken()
-      });
+    
+    // Compare the provided password with the hashed password
+    const passwordMatch = await bcrypt.compare(password, userExist.password);
+    
+    if (passwordMatch) {
+      // Check if the user is an admin
+      if (userExist.isAdmin) {
+        return {
+          message: "Login Successful",
+          username: userExist.username,
+          userId: userExist._id.toString(),
+          token: await userExist.generateToken(),
+          password: userExist.password,
+        };
+      } else {
+        throw new Error("You are not authorized to login as an admin", 403);
+      }
     } else {
       throw new Error("Invalid email or password", 400);
     }
   } catch (error) {
-    throw new Error(error, 400);
+    throw new Error(error.message || "Error occurred while logging in", 400);
   }
 };
 
@@ -97,9 +84,21 @@ const resetPassword = async (userId, token, password) => {
   return true;
 };
 
+const changePassword = async (userId, password) => {
+  const hash = await bcrypt.hash(password, Number(bcryptSalt));
+  await User.updateOne(
+    { _id: userId },
+    { $set: { password: hash } },
+    { new: true }
+  );
+  const user = await User.findById({ _id: userId });
+  sendEmail( user.email, "Password Reset Successfully", { name: user.name, }, "./template/resetPassword.handlebars");
+  return true;
+};
+
 module.exports = {
-  signup,
   loginUser,
   requestPasswordReset,
   resetPassword,
+  changePassword,
 };

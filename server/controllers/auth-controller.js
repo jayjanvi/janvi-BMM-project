@@ -1,9 +1,9 @@
-const User = require("../models/user-model");
 const {
-  signup,
+  addUserService,
   loginUser,
   requestPasswordReset,
   resetPassword,
+  changePassword,
 } = require("../services/auth-service");
 
 const home = async (req, res) => {
@@ -14,10 +14,7 @@ const home = async (req, res) => {
   }
 };
 
-const register = async (req, res, next) => {
-  const signupService = await signup(req.body);
-  return res.json(signupService);
-};
+
 
 const login = async (req, res, next) => {
   const loginService = await loginUser(req.body);
@@ -40,10 +37,18 @@ const resetPasswordController = async (req, res, next) => {
   return res.json(resetPasswordService);
 };
 
+const changePasswordController = async (req, res, next) => {
+  const changePasswordService = await changePassword(
+    req.body.userId,
+    req.body.password
+  );
+  return res.json(changePasswordService);
+};
+
 module.exports = {
   home,
-  register,
   resetPasswordRequestController,
   resetPasswordController,
   login,
+  changePasswordController,
 };
