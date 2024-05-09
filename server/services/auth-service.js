@@ -4,7 +4,6 @@ const Token = require("../models/token-model");
 const sendEmail = require("../utils/email/sendEmail");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-
 const clientURL = process.env.CLIENT_URL;
 const bcryptSalt = process.env.BCRYPT_SALT;
 
@@ -61,7 +60,7 @@ const requestPasswordReset = async (email) => {
   const link = `${clientURL}/passwordReset?token=${resetToken}&id=${user._id}`;
   sendEmail(user.email, "Password Reset Request", {name: user.name, link: link,}, "./template/requestResetPassword.handlebars");
   return link;
-};
+};6
 
 const resetPassword = async (userId, token, password) => {
   let passwordResetToken = await Token.findOne({ userId });
@@ -96,9 +95,23 @@ const changePassword = async (userId, password) => {
   return true;
 };
 
+const forgotPassword = async (userId, email) => {
+  const hash = await bcrypt.hash(password, Number(bcryptSalt));
+  await User.updateOne(
+    { _id: userId },
+    {email:email},
+    { $set: { password: hash } },
+   
+  );
+  const user = await User.findById({ _id: userId });
+  sendEmail( user.email, "Password Reset Successfully", { name: user.name, }, "./template/resetPassword.handlebars");
+  return true;
+};
+
 module.exports = {
   loginUser,
   requestPasswordReset,
   resetPassword,
   changePassword,
+  forgotPassword,
 };

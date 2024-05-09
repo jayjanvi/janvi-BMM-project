@@ -1,16 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+
 import AuthService from "../services/authService";
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import { ChangePassword } from "../pages/ChangePassword";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const [activeItem, setActiveItem] = useState(null);
+
   // Handle Change password modal
   const [show, setShow] = useState(false);
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -36,6 +35,11 @@ export const Navbar = () => {
       document.removeEventListener("click", handleOutsideClick);
     };
   }, []);
+
+  
+  const handleItemClick = (itemName) => {
+    setActiveItem(itemName);
+  };
 
   const handleLogout = () => {
     AuthService.logout();
@@ -70,20 +74,20 @@ export const Navbar = () => {
               className="collapse navbar-collapse"
               id="navbarSupportedContent" >
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                <li className="nav-item">
-                  <a className="nav-link" aria-current="page" href="#" onClick={() => navigate("/calendar")}>
+                <li className={`nav-item ${activeItem === "calendar" ? "active" : ""}`}>
+                  <NavLink className="nav-link" to="/" onClick={() => handleItemClick("calendar")}>
                     Calendar
-                  </a>
+                  </NavLink>
                 </li>
-                <li className="nav-item">
-                  <a className="nav-link " href="#" onClick={() => navigate("/bookingList")}>
-                    Booking List
-                  </a>
+                <li className={`nav-item ${activeItem === "booking" ? "active" : ""}`}>
+                  <NavLink className="nav-link" to="/booking" onClick={() => handleItemClick("booking")}>
+                    Booking
+                  </NavLink>
                 </li>
-                <li className="nav-item">
-                  <a className="nav-link " href="#" onClick={() => navigate("/")}>
-                    User List
-                  </a>
+                <li className={`nav-item ${activeItem === "user" ? "active" : ""}`}>
+                  <NavLink className="nav-link" to="/user" onClick={() => handleItemClick("user")}>
+                    User
+                  </NavLink>
                 </li>
               </ul>
               <div className="h-100 d-lg-inline-flex align-items-center">
@@ -101,19 +105,14 @@ export const Navbar = () => {
                   </li>
 
                   {/* User Menu */}
-                  <li
-                    className={`nav-item dropdown ${dropdownOpen ? "show" : ""
-                      }`} >
-                    <a
-                      className="app-nav__item dropdown-toggle"
+                  <li className={`nav-item dropdown ${dropdownOpen ? "show" : ""  }`} >
+                    <a className="app-nav__item dropdown-toggle"
                       href="#"
                       onClick={toggleDropdown}
                       aria-expanded={dropdownOpen ? "true" : "false"} >
                       Admin
                     </a>
-                    <ul
-                      className={`dropdown-menu settings-menu dropdown-menu-right ${dropdownOpen ? "show" : ""
-                        }`}
+                    <ul className={`dropdown-menu settings-menu dropdown-menu-right ${dropdownOpen ? "show" : "" }`}
                       onClick={closeDropdown}>
                       <li><a onClick={handleShow} className="dropdown-item" >Change Password</a></li>
                       <li>

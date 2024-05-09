@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
-import UserService from '../../services/userService';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
-export const UserList = () => {
+export const UserList = ({ userResponse }) => {
 
   const [users, setUsers] = useState([]); // Number of users to display per page  
   const [currentPage, setCurrentPage] = useState(1);
@@ -14,32 +13,24 @@ export const UserList = () => {
 
   useEffect(() => {
     // Fetch users list when the component mounts
-    fetchUsers();
-  }, [showOthers]);
-
-  const toggleShowOthers = () => {
-    setShowOthers(prevState => !prevState); // Toggles the state between true and false
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const response = await UserService.userList();
+    if (userResponse) {
       setCurrentPage(1)
       if (showOthers) {
-        setUsers(response.data.filter(user => user.isEmployee === false));
+        setUsers(userResponse.data.filter(user => user.isEmployee === false));
       } else {
-        setUsers(response.data.filter(user => user.isEmployee === true));
+        setUsers(userResponse.data.filter(user => user.isEmployee === true));
       }
-    } catch (error) {
-      console.error("Error fetching users:", error);
+    }
+  }, [userResponse, showOthers]);
+
+  const toggleShowOthers = (data) => {
+    if (data === "others") {
+      setShowOthers(true);
+    } else {
+      setShowOthers(false);
     }
   };
 
-  // Filter users where department is not null
-  // const employees = users.filter(user => user.isEmployee === true);
-
-  // Sort users by username
-  // const sortedUsers = filteredUsers.sort((a, b) => a.username.localeCompare(b.username));
   const sortedUsers = users.sort((a, b) => {
     if (!sortConfig) {
       return 0;
@@ -68,12 +59,8 @@ export const UserList = () => {
   };
 
   const renderSortIcon = (key) => {
-    if (!sortConfig || sortConfig.key !== key) {
-      return <FaSort />;
-    }
-    return (
-      sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />
-    );
+    if (!sortConfig || sortConfig.key !== key) { return <FaSort />; }
+    return (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />);
   };
 
   return (
@@ -82,7 +69,7 @@ export const UserList = () => {
         <a className={`content-tab_link ${showOthers ? "" : "active"}`} onClick={toggleShowOthers} href="#">
           Rishabh Employees
         </a>
-        <a className={`content-tab_link ${showOthers ? "active" : ""}`} onClick={toggleShowOthers} href="#">
+        <a className={`content-tab_link ${showOthers ? "active" : ""}`} onClick={() => toggleShowOthers("others")} href="#">
           Others
         </a>
       </div>
@@ -98,16 +85,15 @@ export const UserList = () => {
         </thead>
         <tbody>
           {currentUsers.map((user, index) => (
-            // user.department && (
             <tr key={user._id}>
               <td>{indexOfFirstUser + index + 1}</td>
               <td>{user.username}</td>
               <td>{user.email}</td>
               <td>{user.phone}</td>
-              <td>{user.department}</td>
+              {!showOthers && <td>{user.department}</td>}
             </tr>
-            // )
           ))}
+          
         </tbody>
       </Table>
       <div className="d-flex justify-content-end">

@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { ToastContainer, toast } from 'react-toastify';
+import { ClipLoader } from 'react-spinners';
 import UserService from "../../services/userService";
+import { ToastContainer, toast } from 'react-toastify';
+// import { departmentList } from "../../../../server/controllers/depatment-controller";
 
-export const AddUser = ({ show, handleClose }) => {
+export const AddUser = ({ show, handleClose, onAddUser }) => {
   const initialFormData = {
     username: "",
     email: "",
@@ -14,7 +16,7 @@ export const AddUser = ({ show, handleClose }) => {
     isEmployee: "false",
     department: "",
   };
-
+  const [loading, setLoading] = useState(false); // State for spinner loading
   const [formData, setFormData] = useState(initialFormData);
 
   const [errors, setErrors] = useState({
@@ -27,8 +29,7 @@ export const AddUser = ({ show, handleClose }) => {
   });
 
   const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
-  // const [showSuccessAlert, setShowSuccessAlert] = useState(false); // State to manage success alert
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -37,67 +38,103 @@ export const AddUser = ({ show, handleClose }) => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reloading
+    
 
     // Perform validation
     let newErrors = {};
+    
 
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
+      setLoading(false);
     } else if (formData.username.trim().length < 3) {
       newErrors.username = "Username must have at least 3 characters";
     } else if (formData.username.trim().length > 255) {
       newErrors.username = "Username must not have more than 255 characters";
+      setLoading(false);
     }
 
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
+      setLoading(false);
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email.trim())) {
       newErrors.email = "Invalid email address";
+      setLoading(false);
     }
 
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
+      setLoading(false);
     } else if (!/^\d{10}$/.test(formData.phone.trim())) {
       newErrors.phone = "Phone number must be exactly 10 digits";
+      setLoading(false);
     }
 
     if (!formData.password.trim()) {
       newErrors.password = "Password is required";
+      setLoading(false);
     } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{6,})/.test(formData.password.trim())) {
       newErrors.password = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit";
     }
 
-    if (formData.isEmployee && !formData.department.trim()) {
+    if (formData.isEmployee === "true" && !formData.department.trim()) {
       newErrors.department = "Department is required";
+      setLoading(false);
     }
 
     setErrors(newErrors);
 
     // If there are no errors, create the user
     if (Object.keys(newErrors).length === 0) {
+      setLoading(true); 
       try {
+      
         const response = await UserService.addUser(formData);
         if (response.status === 200) {
+          await sendEmail(formData.email, formData.password);
           toast.success("User added successfully!");
+          setTimeout(() => {
           handleClose();
-          window.location.reload();
           setFormData(initialFormData);
+          window.location.reload();
+           setLoading(false);
+          },2000);
         } else {
           toast.error("Sorry! User not created");
+          setLoading(false);
         }
+       
       } catch (error) {
         if (error.response) {
           toast.error(error.response.data.message);
+          setLoading(false);
         }
       }
     }
   };
 
+  // const sendEmail = async (email, password) => {
+  //   try {
+  //     const response = await authService.forgotPassword({ email, password });
+  //     if (response.status === 200) {
+  //       console.log('Email sent successfully');
+  //     } else {
+  //       console.error('Failed to send email:', response.data.message);
+  //       throw new Error(response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error sending email:', error);
+  //     throw new Error('Failed to send email');
+  //   }
+  // };
+
   const handleModalClose = () => {
     handleClose();
-    setFormData(initialFormData); // Reset form data after closing the modal
+    setFormData(initialFormData);
+    setLoading(false); // Reset form data after closing the modal
   };
 
 
@@ -205,7 +242,6 @@ export const AddUser = ({ show, handleClose }) => {
                 <Form.Control
                   type="text"
                   name="department"
-                  placeholder="Enter Your department"
                   value={formData.department}
                   onChange={handleChange}
                   isInvalid={!!errors.department} />
@@ -221,7 +257,11 @@ export const AddUser = ({ show, handleClose }) => {
             Close
           </Button>
           <Button variant="primary" onClick={handleSubmit}>
-            Add
+          {loading ? (
+              <ClipLoader color={'#ffffff'} loading={loading} size={25} />
+            ) : (
+              "Add"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>

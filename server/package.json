@@ -20,9 +20,10 @@
     "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.5.0",
-    "mongoose": "^8.3.1",
+    "mongoose": "^8.3.4",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.0",
+    "react-date-range": "^2.0.1",
     "zod": "^3.22.4"
   }
 }

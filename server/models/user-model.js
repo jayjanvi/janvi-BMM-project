@@ -1,10 +1,24 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Schema = mongoose.Schema;
+
+// Define the sequence schema
+const sequenceSchema = new mongoose.Schema({
+  _id: { type: String, required: true },
+  sequence_value: { type: Number, default: 2000 }
+});
+
+// Create the Sequence model
+const Sequence = mongoose.model('Sequence', sequenceSchema);
 
 // Define the User schema
 const userSchema = new mongoose.Schema(
   {
+    code: {
+      type: Number,
+      unique: true,
+    },
     username: {
       type: String,
       required: true,
@@ -54,6 +68,26 @@ userSchema.pre("save", async function (next) {
     user.password = hash_password;
   } catch (error) {
     next(error);
+  }
+});
+
+userSchema.pre('save', async function(next) {
+  const doc = this;
+  if (!doc.code) {
+      try {
+          // Find and increment the sequence value
+          const sequence = await Sequence.findByIdAndUpdate(
+              { _id: 'userId' },
+              { $inc: { sequence_value: 1 } },
+              { new: true, upsert: true }
+          );
+          doc.code = sequence.sequence_value;
+          next();
+      } catch (error) {
+          return next(error);
+      }
+  } else {
+      next();
   }
 });
 

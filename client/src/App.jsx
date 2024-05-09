@@ -1,16 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
-
 import { Calendar } from "./pages/Calendar";
-import { Home } from "./pages/Home";
-import { AddUser } from "./pages/user/AddUser";
 import { Login } from "./pages/Login";
-import { AddBooking } from "./pages/AddBooking";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import "./App.css";
 import AuthService from "./services/authService";
 import ErrorPage from "./pages/Error";
-import { BookingList } from "./pages/BookingList";
+import { UserFile } from "./pages/user/UserPage";
+import { BookingPage } from "./pages/booking/BookingPage";
+import { ResetPassword } from "./pages/ResetPassword";
 
 const App = () => {
 
@@ -18,15 +15,17 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
-          {/* <Route exact path="/" element={<Home />} /> */}
-          <Route path="/*" element={<ErrorPage/>} />
-          <Route path="/login" element={<ProtectedLogin />} />
-          <Route path="/" element={<PrivateRoute />} />
-          <Route path="/addUser" element={<AddUser />} />
-          <Route path="/addBooking" element={<AddBooking />} />
-          <Route path="/bookingList" element={<BookingList />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<PrivateRoute pageLoad="home"/>} />
+          <Route path="/user" element={<PrivateRoute pageLoad="user"/>} />
+          <Route path="/booking" element={<BookingPage />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/passwordReset" element={<ResetPassword />} />
+          <Route path="/*" element={<ErrorPage/>} />
+
+        {/* <PrivateRoute path="/" element={<Calendar />} />
+        <PrivateRoute path="/user" element={<UserFile />} />
+        <PrivateRoute path="/booking" element={<BookingPage />} /> */}
        
           {/* <Route path="/change_pass" element={<Change_Password />} />
           <Route path="/login" element={<Login />} />
@@ -39,14 +38,29 @@ const App = () => {
     </>
   );
 };
-const ProtectedLogin = () => {
-  const isAuthenticated = AuthService.isAuthenticated();
-  return isAuthenticated ? <Navigate to="/" replace /> : <Login />;
-};
+// const ProtectedLogin = () => {
+//   const isAuthenticated = AuthService.isAuthenticated();
+//   return isAuthenticated ? <Navigate to="/" replace /> : <Login />;
+// };
 
-const PrivateRoute = () => {
+// const PrivateRoute = () => {
+//   const isAuthenticated = AuthService.isAuthenticated();
+//   return isAuthenticated ? <Calendar /> : <Navigate to="/login" replace />;
+//   // return isAuthenticated ? <Home /> : <Navigate to="/login" replace />;
+// };
+
+const PrivateRoute = ({ pageLoad }) => {
+  console.log(pageLoad);
   const isAuthenticated = AuthService.isAuthenticated();
-  return isAuthenticated ? <Home /> : <Navigate to="/login" replace />;
+  return isAuthenticated ? (
+    <>
+    {pageLoad === "home" && <Calendar />}
+    {pageLoad === "user" && <UserFile />}
+    {pageLoad === "booking" && <BookingPage />}
+  </>
+  ) : (
+    <Navigate to="/login" replace />
+  );
 };
 
 export default App;

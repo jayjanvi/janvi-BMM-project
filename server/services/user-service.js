@@ -22,7 +22,7 @@ const addUserService = async (data) => {
     }
   };
 
-  const getAllUsersByType = async (type) => {
+  const getAllUsers = async () => {
     try {  
       const users = await User.find();
       if (!users || users.length === 0) {
@@ -34,7 +34,41 @@ const addUserService = async (data) => {
     }
   };
 
+async function findUsers(query) {
+    try {
+        const users = await User.find({
+            $and: [
+                { isEmployee: true }, // isEmployee is true condition
+                {
+                    $or: [
+                        { username: { $regex: new RegExp(query, 'i') } },
+                        // { code: { $regex: new RegExp(query, 'i') } },
+                        { department: { $regex: new RegExp(query, 'i') } }
+                    ]
+                }
+            ]
+        }).limit(10).exec(); // Limit to first 10 records
+        return users;
+    } catch (error) {
+        throw error;
+    }
+}
+
+  const getUserById = async (userId) => {
+    try {  
+      const user = await User.findOne({_id: userId});
+      if (!user) {
+        throw new Error("No users found!", 404);
+      }
+      return user;
+    } catch (error) {
+      throw new Error(error, 500);
+    }
+  };
+
   module.exports = {
     addUserService,
-    getAllUsersByType,
+    getAllUsers,
+    getUserById,
+    findUsers
   }

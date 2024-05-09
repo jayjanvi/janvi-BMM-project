@@ -8,6 +8,11 @@ class UserService {
   userList() {
     return axios.get(URL+"/api/auth/users");
   }
+
+  searchUsers(value) {
+    return axios.post(URL+"/api/auth/findUsers",value);
+  }
+
 }
 
 export default new UserService();

@@ -3,6 +3,7 @@ import { Navbar } from "../components/Navbar";
 import Button from 'react-bootstrap/Button';
 import { AddUser } from "./user/AddUser";
 import { UserList } from "./user/userList";
+import { Footer } from "../components/Footer";
 
 export const Calendar = () => {
   //Add user modal
@@ -66,22 +67,8 @@ export const Calendar = () => {
             </div>
           </div>
         </div>
-
       </div>
-
-      <div className="footer">
-        <div className="container">
-          <div className="footer-block">
-            <p>Copyright © 2022 Rishabh Software. All Rights Reserved.</p>
-            <div className="social">
-              <a href="#" aria-label="Facebook"><i className="icon-facebook"></i></a>
-              <a href="#" aria-label="Instagram"><i className="icon-instagram"></i></a>
-              <a href="#" aria-label="Linkedin"><i className="icon-linkedin"></i></a>
-              <a href="#" aria-label="Twitter"><i className="icon-twitter"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Footer/>
     </div>
   );
 };

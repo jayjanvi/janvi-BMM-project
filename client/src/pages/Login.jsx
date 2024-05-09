@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../services/authService";
-
+import { ClipLoader } from 'react-spinners';
 const URL = "http://localhost:5000/api/auth/login";
+
+
 export const Login = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
@@ -10,6 +12,7 @@ export const Login = () => {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false); // State for spinner loading
   const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
 
   const handleInput = (e) => {
@@ -34,6 +37,8 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setLoading(true); 
+      setTimeout(async () => {
       const response = await AuthService.login(user);
       if (response.status === 200) {
         localStorage.setItem("user", JSON.stringify(response.data));
@@ -41,9 +46,13 @@ export const Login = () => {
       } else {
         alert("You are not registered to this service");
       }
+      setLoading(false); // Stop spinner loading after 3 seconds
+      }, 2000);
     } catch (error) {
       alert("Please try again");
+      setLoading(false);
     }
+   
   };
 
   return (
@@ -122,7 +131,12 @@ export const Login = () => {
               </div>
             </div>
             <div className="form-group btn-container">
-              <button className="btn btn-xl btn-primary">Sign in</button>
+              <button className="btn btn-xl btn-primary">
+              {loading ? (
+                  <ClipLoader color={'#ffffff'} loading={loading} size={25} />
+                ) : (
+                  "Sign in"
+                )}</button>
             </div>
           </form>
         </div>

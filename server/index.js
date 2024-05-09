@@ -32,6 +32,8 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: error.message });
 });
 
+// app.use("/department", departmentRoutes);
+
 app.listen(PORT, () => {
   console.log("Listening to Port ", PORT);
 });

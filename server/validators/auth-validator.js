@@ -41,6 +41,7 @@ const addUserSchema = z.object({
     ),
   department: z.any(),
   isEmployee: z.any(),
+  code: z.any(),
 });
 
 module.exports = addUserSchema;

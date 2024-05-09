@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navbar } from "../components/Navbar";
 import Button from 'react-bootstrap/Button';
 import { AddUser } from "./user/AddUser";
@@ -9,7 +9,12 @@ export const Home = () => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  
+  // const handleShow = () => setShow(true)
+  const handleShow = () => {
+    console.log('handle show called ')
+    setShow(true)
+  };
 
   return (
     <div>
@@ -26,7 +31,7 @@ export const Home = () => {
           </div>
         </div>
       </div>
-      <AddUser show={show} handleClose={handleClose} />
+      <AddUser key={show.toString()} show={show} handleClose={handleClose} />
       <UserList />
       {/* Footer */}
       <div className="footer">

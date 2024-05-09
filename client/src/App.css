@@ -40,6 +40,10 @@
   content: "\e90c";
 }
 
+.icon-bin:before {
+  content: "\e9ac";
+}
+
 .icon-twitter:before {
   content: "\e90d";
 }
@@ -2520,7 +2524,7 @@ textarea.form-control-lg {
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
-  width: 100%;
+  width: 40%;
 }
 .input-group > .form-control,
 .input-group > .form-select {
@@ -11721,8 +11725,9 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 }
 .side-modal .modal-dialog .modal-content .modal-body {
   padding: 15px 30px;
-  max-height: 100vh;
-  overflow: auto;
+
+  max-height: calc(100vh - 200px);/*100vh;*/
+  overflow-y: auto;
 }
 .side-modal .modal-dialog .modal-content .modal-body::-webkit-scrollbar {
   width: 6px;
@@ -12159,7 +12164,7 @@ img {
   font-size: 16px;
   color: #000;
   font-weight: 400;
-  padding: 6px 12px 6px 20px;
+  padding: 10px 12px 6px 20px;
 }
 
 .form-group input[type=text]::-moz-placeholder, .form-group input[type=number]::-moz-placeholder, .form-group input[type=password]::-moz-placeholder, .form-group input[type=date]::-moz-placeholder, .form-group input[type=email]::-moz-placeholder, .form-group input[type=tel]::-moz-placeholder, .form-group select::-moz-placeholder {
@@ -12194,10 +12199,14 @@ img {
 
 .input-group-append {
   position: absolute;
-  right: 10px;
+  right: -15%;
   top: 50%;
   transform: translate(10px, -50%);
   z-index: 5;
+}
+
+.datepicker-icn {
+  width: 120%;
 }
 
 .input-group-append .input-group-text {
@@ -12418,9 +12427,14 @@ img {
   margin-bottom: 32px;
 }
 
+.mealDates {
+  width: 20%;
+}
+
 .booking-wrapper {
   display: block;
 }
+
 .booking-wrapper .booking-block {
   display: flex;
   align-items: center;
@@ -12663,3 +12677,33 @@ img {
 .form-group .search-wrapper .form-control {
   padding: 6px 12px 6px 45px;
 }/*# sourceMappingURL=main.css.map */
+
+
+/* create booking */
+.modal {
+  display: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1050;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+}
+
+.modal.fade.show {
+  display: block;
+  animation: fadeInRight 0.3s forwards;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
