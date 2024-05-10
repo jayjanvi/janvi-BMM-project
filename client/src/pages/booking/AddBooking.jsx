@@ -184,8 +184,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                     minDate={new Date()}
                     filterDate={isWeekday}
                     placeholderText="Select Date Range"
-                    className="form-control border-right-0 datepicker-icn"
-                  />
+                    className="form-control border-right-0 datepicker-icn"  />
 
                   <div className="input-group-append bg-transparent">
                     <span className="input-group-text bg-transparent" id="basic-addon2">
@@ -232,14 +231,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                   <table className="table table-hover responsive nowrap table-bordered">
                     <thead>
                       <tr>
-                        <th>
-                          <div className="form-group mb-0">
-                            <label className="custom-checkbox">
-                              <input className="checkbox__input" type="checkbox" />
-                              <span className="checkbox__checkmark"></span>
-                            </label>
-                          </div>
-                        </th>
+                        <th> </th>
                         <th>Employee ID</th>
                         <th>Employee Name</th>
                         <th>Department</th>
@@ -267,32 +259,6 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                           <td>{user.department}</td>
                         </tr>
                       ))} 
-                    {/* <tr>
-                        <td> */}
-                    {/* <div className="form-group mb-0">
-                            <label className="custom-checkbox m-0">
-                              <input className="checkbox__input" type="checkbox" name="employee2" checked={formData.employee2} onChange={handleChange} />
-                              <span className="checkbox__checkmark"></span>
-                            </label>
-                          </div>
-                        </td>
-                        <td>2002</td>
-                        <td>John</td>
-                        <td>Marketing</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div className="form-group mb-0">
-                            <label className="custom-checkbox m-0">
-                              <input className="checkbox__input" type="checkbox" name="employee3" checked={formData.employee3} onChange={handleChange} />
-                              <span className="checkbox__checkmark"></span>
-                            </label>
-                          </div>
-                        </td>
-                        <td>2003</td>
-                        <td>Alice</td>
-                        <td>HR</td>
-                      </tr> */}
                     </tbody>
                   </table>
                 </div>

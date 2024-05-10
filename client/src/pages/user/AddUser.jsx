@@ -94,7 +94,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
       
         const response = await UserService.addUser(formData);
         if (response.status === 200) {
-          await sendEmail(formData.email, formData.password);
+          // await sendEmail(formData.email, formData.password);
           toast.success("User added successfully!");
           setTimeout(() => {
           handleClose();

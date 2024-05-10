@@ -120,47 +120,7 @@ export const BookingList = ({ BookingResponse }) => {
             ))}
           </tbody>
         </Table>
-        {/* <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th onClick={() => handleSort('code')}>Employee Code{renderSortIcon('code')}</th>
-              <th onClick={() => handleSort('name')}>Employee Name {renderSortIcon('name')} </th>
-              <th onClick={() => handleSort('bookingCategory')}>Booking_Category {renderSortIcon('bookingCategory')}</th>
-              <th onClick={() => handleSort('mealType')}>Meal Type{renderSortIcon('mealType')}</th>
-             
-              {showOthers && (
-                <>
-                  <th onClick={() => handleSort('Booking_Category')}>Booking Category{renderSortIcon('Booking_Category')}</th>
-                  <th onClick={() => handleSort('bookingCount')}>Booking Count{renderSortIcon('bookingCount')}</th>
-                  <th onClick={() => handleSort('notes')}>Notes{renderSortIcon('notes')}</th>
-                </>
-              )}
-
-            </tr>
-          </thead>
-          <tbody>
-            {currentBookings.map((booking, index) => (
-              <tr key={booking._id}>
-                <td>{indexOfFirstUser + index + 1}</td>
-                <td>{booking.code}</td>
-                <td>{booking.name}</td>
-                <td>{booking.category}</td>
-                <td>{booking.mealType}</td>
-                <td>{booking.bookingCount}</td>
-                <td>{booking.Meal_Date}</td>
-                <td>{booking.Meal_Date}</td>
-                {showOthers && (
-                  <>
-                    <td>{booking.Booking_Category}</td>
-                    <td>{booking.bookingCount}</td>
-                    <td>{booking.notes}</td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </Table> */}
-        <div className="d-flex justify-content-end">
+          <div className="d-flex justify-content-end">
           <Pagination>
             <Pagination.Prev
               onClick={() => handlePageChange(currentPage - 1)}
