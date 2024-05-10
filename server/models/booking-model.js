@@ -40,11 +40,11 @@ const bookingSchema = new Schema({
     required: true,
     default: false,
   },
-  employee: [{
+  employee: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true,
-  }]
+    required: false,
+  }
 });
 
 // define the model or the collection name

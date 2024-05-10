@@ -33,17 +33,11 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     employee: []
   });
 
-  // // Filter user list based on search query
-  // const filteredUsers = userList.filter((user) =>
-  //   user.name.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
   // Handle search input change
   const handleSearchInputChange = (e) => {
     fetchUsers(e.target.value.toLowerCase());
     setSearchQuery(e.target.value);
   };
-
 
   const updateFormVisibility = () => {
     const { category } = formData;
@@ -54,8 +48,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     setBookingCategory(category === 'custom_booking');
   };
 
-
-  useEffect( () => {
+  useEffect(() => {
     updateFormVisibility();
     fetchUsers();
   }, [formData.category]);
@@ -80,31 +73,28 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     }));
   };
 
-    // fetch user list
-    const fetchUsers = async ( value ) => {
-      try {
-          const response = await userService.searchUsers( { value : value } );
-          setUserList(response.data);
-      } catch (error) {
-          console.error("Error fetching users:", error);
-      }
+  // fetch user list
+  const fetchUsers = async (value) => {
+    try {
+      const response = await userService.searchUsers({ value: value });
+      setUserList(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
 
-    console.log(formData);
-
     bookingService.addBooking(formData)
       .then(response => {
-        console.log(response);
-        toast.success("Booking added successfully");
         setTimeout(() => {
           handleClose();
           window.location.reload();
           setLoading(false);
         }, 2000);
+        toast.success("Booking added successfully");
       })
       .catch(error => {
         toast.error("Failed to add booking");
@@ -184,7 +174,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                     minDate={new Date()}
                     filterDate={isWeekday}
                     placeholderText="Select Date Range"
-                    className="form-control border-right-0 datepicker-icn"  />
+                    className="form-control border-right-0 datepicker-icn" />
 
                   <div className="input-group-append bg-transparent">
                     <span className="input-group-text bg-transparent" id="basic-addon2">
@@ -238,7 +228,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                       </tr>
                     </thead>
                     <tbody>
-                    {userList && userList.map((user) => (
+                      {userList && userList.map((user) => (
                         <tr key={user._id}>
                           <td>
                             <div className="form-group mb-0">
@@ -258,7 +248,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                           <td>{user.username}</td>
                           <td>{user.department}</td>
                         </tr>
-                      ))} 
+                      ))}
                     </tbody>
                   </table>
                 </div>

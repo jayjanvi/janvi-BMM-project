@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../services/authService";
 import { ClipLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
 const URL = "http://localhost:5000/api/auth/login";
 
 
@@ -28,7 +29,7 @@ export const Login = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
+
   const handleForgotPassword = () => {
     // Redirect to the forgot password page
     navigate("/forgotPassword");
@@ -37,8 +38,7 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      setLoading(true); 
-      setTimeout(async () => {
+      setLoading(true);
       const response = await AuthService.login(user);
       if (response.status === 200) {
         localStorage.setItem("user", JSON.stringify(response.data));
@@ -46,13 +46,17 @@ export const Login = () => {
       } else {
         alert("You are not registered to this service");
       }
-      setLoading(false); // Stop spinner loading after 3 seconds
-      }, 2000);
+      toast.success("Login Successfully");
+      setLoading(false);
     } catch (error) {
-      alert("Please try again");
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("PLease try again!");
+      }
       setLoading(false);
     }
-   
+
   };
 
   return (
@@ -106,8 +110,6 @@ export const Login = () => {
                 <span
                   onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
                   className={`field-icon toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
-                //  toggle="#password-field"
-                // className="icon-eye-close field-icon toggle-password"
                 ></span>
               </div>
             </div>
@@ -132,7 +134,7 @@ export const Login = () => {
             </div>
             <div className="form-group btn-container">
               <button className="btn btn-xl btn-primary">
-              {loading ? (
+                {loading ? (
                   <ClipLoader color={'#ffffff'} loading={loading} size={25} />
                 ) : (
                   "Sign in"

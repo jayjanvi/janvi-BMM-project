@@ -5,7 +5,6 @@ import Button from 'react-bootstrap/Button';
 import { ClipLoader } from 'react-spinners';
 import UserService from "../../services/userService";
 import { ToastContainer, toast } from 'react-toastify';
-// import { departmentList } from "../../../../server/controllers/depatment-controller";
 
 export const AddUser = ({ show, handleClose, onAddUser }) => {
   const initialFormData = {

@@ -4,8 +4,19 @@ const { getUserById } = require("./user-service");
 // Create booking
 const createBooking = async (data) => {
   try {
-    const booking = await Booking.create(data);
-    return booking;
+    const bookings = [];
+
+    if (data.employee.length !== 0) {
+      for (const employeeId of data.employee) {
+        const bookingData = { ...data, employee: employeeId }; // Replace `employee` array with individual employeeId
+        const booking = await Booking.create(bookingData);
+        bookings.push(booking);
+      }
+    } else {
+      const bookingData = { ...data, employee: null };
+      await Booking.create(bookingData);
+    }
+    return bookings;
   } catch (error) {
     throw new Error("Error creating booking: " + error.message);
   }
@@ -14,13 +25,19 @@ const createBooking = async (data) => {
 // Delete booking by ID
 const deleteBookingById = async (bookingId) => {
   try {
-    const deletedBooking = await Booking.findByIdAndDelete(bookingId);
-    if (!deletedBooking) {
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!updatedBooking) {
       throw new Error("Booking not found");
     }
-    return deletedBooking;
+
+    return updatedBooking;
   } catch (error) {
-    throw new Error("Error deleting booking: " + error.message);
+    throw new Error("Error updating booking: " + error.message);
   }
 };
 
@@ -41,39 +58,35 @@ const updateBookingById = async (bookingId, updatedData) => {
   }
 };
 
-// Get all bookings
-const getAllBookings = async () => {
+// Get all bookings for employees
+const getAllBookings = async (isEmployee) => {
   try {
-    const bookings = await Booking.find();
-    return updateBookingsWithEmployeeDetails(bookings);
+    const bookings = await Booking.find({ isDeleted: false });
+    const employeeBooking = bookings.filter(booking => booking.employee !== null);
+    const nonEmployeeBooking = bookings.filter(booking => booking.employee === null);
+    if (isEmployee) {
+      return getBookingsDetailsForEmployee(employeeBooking);
+    } else {
+      return nonEmployeeBooking;
+    }
   } catch (error) {
     throw new Error("Error fetching bookings: " + error.message);
   }
 };
 // Define a function to update all bookings with employee details
-async function updateBookingsWithEmployeeDetails(bookings) {
-  const updatedBookings = [];
+async function getBookingsDetailsForEmployee(bookings) {
+  const bookingObjs = [];
   // Iterate through each booking
   for (const booking of bookings) {
     // Update booking object with employee details
-    const bookingObj = await updateBookingWithEmployeeDetails(booking);
-    updatedBookings.push(...bookingObj);
-  }
-  return updatedBookings;
-}
-
-async function updateBookingWithEmployeeDetails(booking) {
-  const bookingObjs = [];
-  // Fetch employee details for each employee ID in the booking
-  let user;
-  for (const employeeId of booking.employee) {
     try {
-      user = await getUserById(employeeId);
+      user = await getUserById(booking.employee);
     } catch (error) {
-      throw new Error("User not found: " + employeeId);
+      throw new Error("User not found: " + booking.employee);
     }
     // Construct booking object for each employee
     const bookingObj = {
+      id: booking._id,
       empCode: user.code,
       empName: user.username,
       department: user.department,
@@ -81,12 +94,10 @@ async function updateBookingWithEmployeeDetails(booking) {
       totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
       mealDate: getBusinessDays(booking.startDate, booking.endDate), // Assuming startDate is a Date object
     };
-
     bookingObjs.push(bookingObj);
   }
   return bookingObjs;
 }
-
 function getBusinessDaysCount(startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -105,7 +116,6 @@ function getBusinessDaysCount(startDate, endDate) {
   }
   return count;
 }
-
 function getBusinessDays(startDate, endDate) {
   const dates = [];
   const current = new Date(startDate);

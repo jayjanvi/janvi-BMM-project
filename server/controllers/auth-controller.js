@@ -4,39 +4,8 @@ const {
   requestPasswordReset,
   resetPassword,
   changePassword,
-  // addDepart,
-  // getAllDepart
 } = require("../services/auth-service");
 
-const home = async (req, res) => {
-  try {
-    res.status(200).json({ msg: "Welcome to our home page" });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-// // Add a new department
-// const addDepartment = async (req, res) => {
-//   try {
-//     const { name, description } = req.body;
-//     const newDepartment = new Department({ name, description });
-//     await newDepartment.save();
-//     res.status(201).json(newDepartment);
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// };
-
-// // Get all departments
-// const getAllDepartments = async (req, res) => {
-//   try {
-//     const departments = await Department.find();
-//     res.json(departments);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 const login = async (req, res) => {
   const loginService = await loginUser(req.body);
   return res.json(loginService);
@@ -68,11 +37,8 @@ const changePasswordController = async (req, res) => {
 };
 
 module.exports = {
-  home,
   resetPasswordRequestController,
   resetPasswordController,
   login,
   changePasswordController,
-  // addDepartment,
-  // getAllDepartments
 };

@@ -1,38 +1,24 @@
 import { useState, useEffect } from "react";
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
+import { MdDelete } from "react-icons/md";
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import bookingService from "../../services/bookingService";
+import { toast } from 'react-toastify';
 
 export const BookingList = ({ BookingResponse }) => {
 
   const [bookings, setBookings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [BookingsPerPage] = useState(10);
-  const [showOthers, setShowOthers] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
-    console.log('list', BookingResponse);
     if (BookingResponse) {
       setCurrentPage(1)
-      // setBookings(BookingResponse.data);
-      // if (showOthers) {
-        setBookings(BookingResponse.data);
-      // }
-      //  else {
-      //   setBookings(BookingResponse.data.filter(bookings => bookings.category === "employees" || bookings.category === "non_employees"));
-       
-      // }
+      setBookings(BookingResponse.data);
     }
-  }, [BookingResponse, showOthers]);
-
-  const toggleShowOthers = (data) => {
-    if (data === "others") {
-      setShowOthers(true);
-    } else {
-      setShowOthers(false);
-    }
-  };
+  }, [BookingResponse]);
 
   const sortedBookings = bookings.sort((a, b) => {
     if (!sortConfig) {
@@ -66,61 +52,51 @@ export const BookingList = ({ BookingResponse }) => {
     setSortConfig({ key, direction });
   };
 
+  const deleteBooking = (bookingId) => {
+    bookingService.deleteBooking(bookingId)
+      .then(response => {
+        toast.success("Booking deleted successfully");
+        window.location.reload();
+      })
+      .catch(error => {
+        toast.error("Failed to delete booking");
+      });
+  }
+
   return (
     <>
-      <div className="content-tab">
-        <a className={`content-tab_link ${showOthers ? "" : "active"}`} onClick={toggleShowOthers} href="#">
-          Rishabh Employees
-        </a>
-        <a className={`content-tab_link ${showOthers ? "active" : ""}`} onClick={() => toggleShowOthers("others")} href="#">
-          Others
-        </a>
-      </div>
       <div>
-
-      <Table striped bordered hover>
+        <Table striped bordered hover>
           <thead>
             <tr>
-            {BookingResponse && (
+              {BookingResponse && (
                 <>
-              <th onClick={() => handleSort('code')}>Employee Code{renderSortIcon('code')}</th>
-              <th onClick={() => handleSort('name')}>Employee Name {renderSortIcon('name')} </th>
-              <th onClick={() => handleSort('department')}>Department{renderSortIcon('department')} </th>
-              <th>Meal Type</th>
-              <th onClick={() => handleSort('mealsBooked')}>Total Meals Booked{renderSortIcon('mealsBooked')} </th>
-              <th className="mealDates" onClick={() => handleSort('mealDates')}>Meal Dates{renderSortIcon('mealDates')}</th>
-              <th>Actions</th>
-             </>
-            )}
-              {showOthers && (
-                <>
-                  <th onClick={() => handleSort('bookingCount')}>Booking Count{renderSortIcon('bookingCount')}</th>
-                  <th onClick={() => handleSort('notes')}>Notes{renderSortIcon('notes')}</th>
+                  <th onClick={() => handleSort('code')}>Employee Code{renderSortIcon('code')}</th>
+                  <th onClick={() => handleSort('name')}>Employee Name {renderSortIcon('name')} </th>
+                  <th onClick={() => handleSort('department')}>Department{renderSortIcon('department')} </th>
+                  <th>Meal Type</th>
+                  <th onClick={() => handleSort('mealsBooked')}>Total Meals Booked{renderSortIcon('mealsBooked')} </th>
+                  <th className="mealDates" onClick={() => handleSort('mealDates')}>Meal Dates{renderSortIcon('mealDates')}</th>
+                  <th>Actions</th>
                 </>
               )}
             </tr>
           </thead>
           <tbody>
             {currentBookings.map((booking, index) => (
-              <tr key={booking._id}>
+              <tr key={booking.id}>
                 <td>{booking.empCode}</td>
                 <td>{booking.empName}</td>
                 <td>{booking.department}</td>
                 <td>{booking.mealType}</td>
                 <td>{booking.totalMeals}</td>
-                <td>{booking.mealDate.join(', ')}</td>
-                <td><i className="icon-bin"></i>delete</td>
-                {showOthers && (
-                  <>
-                    <td>{booking.bookingCount}</td>
-                    <td>{booking.notes}</td>
-                  </>
-                )}
+                <td>{booking.mealDate && booking.mealDate.join(', ')}</td>
+                <td><i style={{ cursor: 'pointer' }} onClick={() => deleteBooking(booking.id)}><MdDelete size={18} /></i></td>
               </tr>
             ))}
           </tbody>
         </Table>
-          <div className="d-flex justify-content-end">
+        <div className="d-flex justify-content-end">
           <Pagination>
             <Pagination.Prev
               onClick={() => handlePageChange(currentPage - 1)}
@@ -141,8 +117,5 @@ export const BookingList = ({ BookingResponse }) => {
         </div>
       </div>
     </>
-
   );
 };
-
-
