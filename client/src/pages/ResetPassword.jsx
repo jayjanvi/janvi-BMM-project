@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
 import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
   const [token, setTOken] = useState('');
   const [userId, setUserId] = useState('');
-
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -37,10 +37,13 @@ export const ResetPassword = () => {
       ...formData,
       [name]: value,
     });
+    setErrors({});
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
+
     let newErrors = {};
 
     if (!formData.newPassword.trim()) {
@@ -75,7 +78,11 @@ export const ResetPassword = () => {
       } catch (error) {
         console.error('Error:', error);
         toast.error('An error occurred. Please try again later.');
+      } finally {
+        setLoading(false); // Stop loading
       }
+    } else {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -85,49 +92,12 @@ export const ResetPassword = () => {
         <div className="login-content-lt"></div>
         <div className="login-content-rt">
           <div className="login-box">
-            {/* <form className="login-form" onSubmit={handleSubmit}>
-              <div className="logo-wrapper">
-                <img src="src/assets/images/logo.svg" alt="Rishabh Software" />
-                <span>Meal Facility</span>
-              </div>
-              <h3 className="login-head">Reset Password</h3>
-              <p className="login-text">Enter the password below to continue.</p>
-              <div className="form-group">
-                <label className="control-label">Password</label>
-                <div className="input-addon">
-                  <input
-                    className="form-control"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Enter Your Password"
-                    autoFocus
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="control-label">Confirm Password</label>
-                <div className="input-addon">
-                  <input
-                    className="form-control"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Enter Confirm Password"
-                    autoFocus
-                  />
-                </div>
-              </div>
-              <div className="form-group btn-container">
-                <button className="btn btn-xl btn-primary">Submit</button>
-              </div>
-            </form> */}
             <Form >
-              <Form.Group className="mb-3" controlId="newPassword">
+              <Form.Group className="mb-3" >
                 <Form.Label>New Password</Form.Label>
                 <Form.Control
                   name="newPassword"
-                  // id="password-field"
+                  id="password-field"
                   className="form-control"
                   type={showPassword ? "text" : "password"} // Toggle password visibility
                   required
@@ -141,11 +111,11 @@ export const ResetPassword = () => {
                 ></span>
                 <Form.Control.Feedback type="invalid">{errors.newPassword}</Form.Control.Feedback>
               </Form.Group>
-              <Form.Group className="mb-3" controlId="confirmPassword">
+              <Form.Group className="mb-3" >
                 <Form.Label>Confirm Password</Form.Label>
                 <Form.Control
                   name="confirmPassword"
-                  // id="password-field"
+                  id="password-field"
                   className="form-control"
                   type={showPassword ? "text" : "password"} // Toggle password visibility
                   required
@@ -161,7 +131,13 @@ export const ResetPassword = () => {
               </Form.Group>
             </Form>
             <div className="form-group btn-container">
-              <button className="btn btn-xl btn-primary" onClick={handleSubmit}>Submit</button>
+              <button className="btn btn-xl btn-primary" onClick={handleSubmit} disabled={loading}>
+              {loading ? (
+                  <ClipLoader color={'#ffffff'} loading={loading} size={25} />
+                ) : (
+                  "Submit"
+                )}
+              </button>
             </div>
           </div>
         </div>

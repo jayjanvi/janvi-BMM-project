@@ -5,6 +5,9 @@ import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { MdDelete } from "react-icons/md";
 import bookingService from "../../services/bookingService";
 import { toast } from 'react-toastify';
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css"; // Importing css
+
 
 export const BookingListOthers = ({ BookingResponse }) => {
 
@@ -52,16 +55,42 @@ export const BookingListOthers = ({ BookingResponse }) => {
         setSortConfig({ key, direction });
     };
 
+    // const deleteBooking = (bookingId) => {
+    //     bookingService.deleteBooking(bookingId)
+    //         .then(response => {
+    //             toast.success("Booking deleted successfully");
+    //             window.location.reload();
+    //         })
+    //         .catch(error => {
+    //             toast.error("Failed to delete booking");
+    //         });
+    // }
+
     const deleteBooking = (bookingId) => {
-        bookingService.deleteBooking(bookingId)
-            .then(response => {
-                toast.success("Booking deleted successfully");
-                window.location.reload();
-            })
-            .catch(error => {
-                toast.error("Failed to delete booking");
-            });
-    }
+        confirmAlert({
+          title: "Confirm Delete",
+          message: "Are you sure you want to delete this booking?",
+          buttons: [
+            {
+              label: "Yes",
+              onClick: () => {
+                bookingService.deleteBooking(bookingId)
+                  .then(response => {
+                    toast.success("Booking deleted successfully");
+                    window.location.reload(); // Reloading the page to reflect changes
+                  })
+                  .catch(error => {
+                    toast.error("Failed to delete booking");
+                  });
+              }
+            },
+            {
+              label: "No",
+              onClick: () => {}
+            }
+          ]
+        });
+      }
 
     return (
         <>

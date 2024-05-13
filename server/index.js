@@ -32,24 +32,8 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: error.message });
 });
 
-// app.use("/department", departmentRoutes);
-
 app.listen(PORT, () => {
   console.log("Listening to Port ", PORT);
 });
-
-// connectDB().then(() => {
-//   app.listen(PORT, () => {
-//     console.log(`server is running at port: ${PORT}`);
-//   });
-// });
-
-// app.get("/", (req, res) => {
-//     res.send("hello welcome")
-// })
-
-// app.get("/register", (req, res) => {
-//     res.send(" welcome to registration page")
-// })
 
 module.exports = app;

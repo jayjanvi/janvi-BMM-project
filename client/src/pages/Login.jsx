@@ -38,6 +38,7 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+
       setLoading(true);
       const response = await AuthService.login(user);
       if (response.status === 200) {

@@ -6,6 +6,7 @@ import { Footer } from "../../components/Footer";
 import { AddUser } from "./AddUser";
 import userService from "../../services/userService";
 import { ToastContainer, toast } from 'react-toastify';
+import { ClipLoader } from 'react-spinners';
 
 export const UserFile = () => {
     useEffect(() => {
@@ -14,6 +15,8 @@ export const UserFile = () => {
     }, []);
     const [show, setShow] = useState(false);
     const [userResponse, setUserResponse] = useState(null);
+    const [listLoader, setListLoader] = useState(false);
+
     const handleClose = () => setShow(false);
     const handleShow = () => {
         setShow(true);
@@ -22,9 +25,12 @@ export const UserFile = () => {
     // fetch user list
     const fetchUsers = async () => {
         try {
+            setListLoader(true);
             const response = await userService.userList();
             setUserResponse(response);
+            setListLoader(false);
         } catch (error) {
+            setListLoader(false);
             console.error("Error fetching users:", error);
         }
     };
@@ -62,6 +68,8 @@ export const UserFile = () => {
                     </div>
                 </div>
             </div>
+            <ClipLoader margin={5} cssOverride={{'margin-left':'50%','margin-top':'2%' }} loading={listLoader} />
+      
             {userResponse && <UserList userResponse={userResponse} />}
             <AddUser key={show.toString()} show={show} handleClose={handleClose} onAddUser={addUser} />
             <Footer />

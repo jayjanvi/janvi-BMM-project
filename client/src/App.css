@@ -55,10 +55,16 @@
 .icon-instagram:before {
   content: "\e90b";
 }
-
+/* 
 .icon-bell:before {
   content: "\e909";
+} */
+
+
+.icon-settings:before {
+  content: "\e909";
 }
+
 
 .icon-employees:before {
   content: "\e900";
@@ -11988,13 +11994,23 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 .field-icon-password {
   float: right;
   margin-left: -25px;
-  margin-top: -27px;
+  margin-top: -36px;
   position: relative;
   z-index: 2;
   padding-right: 18px;
   font-size: 20px;
 }
 
+.field-icon-passwordCP
+ {
+  float: right;
+  margin-left: -25px;
+  margin-top: -27px;
+  position: relative;
+  z-index: 2;
+  padding-right: 18px;
+  font-size: 20px;
+}
 /*========================== custom checkbox start ===============================*/
 .custom-checkbox {
   display: flex;

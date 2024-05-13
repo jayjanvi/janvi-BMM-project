@@ -1,5 +1,13 @@
 const Booking = require("../models/booking-model");
+const sendEmail = require("../utils/email/sendEmail");
 const { getUserById } = require("./user-service");
+
+const formatDate = async (date) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${(day < 10 ? '0' : '') + day}-${(month < 10 ? '0' : '') + month}-${year}`;
+}
 
 // Create booking
 const createBooking = async (data) => {
@@ -11,6 +19,19 @@ const createBooking = async (data) => {
         const bookingData = { ...data, employee: employeeId }; // Replace `employee` array with individual employeeId
         const booking = await Booking.create(bookingData);
         bookings.push(booking);
+
+        const user = await getUserById(booking.employee);
+        sendEmail(
+          user.email,
+          "Lunch Meal Booking Confirmation",
+          {
+            name: user.name,
+            bookingType: booking.mealType,
+            startDate: await formatDate(booking.startDate),
+            endDate: await formatDate(booking.endDate),
+          },
+          "./template/bookingConfirm.handlebars"
+        );
       }
     } else {
       const bookingData = { ...data, employee: null };
@@ -62,8 +83,12 @@ const updateBookingById = async (bookingId, updatedData) => {
 const getAllBookings = async (isEmployee) => {
   try {
     const bookings = await Booking.find({ isDeleted: false });
-    const employeeBooking = bookings.filter(booking => booking.employee !== null);
-    const nonEmployeeBooking = bookings.filter(booking => booking.employee === null);
+    const employeeBooking = bookings.filter(
+      (booking) => booking.employee !== null
+    );
+    const nonEmployeeBooking = bookings.filter(
+      (booking) => booking.employee === null
+    );
     if (isEmployee) {
       return getBookingsDetailsForEmployee(employeeBooking);
     } else {

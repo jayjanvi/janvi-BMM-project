@@ -46,6 +46,8 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     setNoteShow(category !== 'employees');
     setCountShow(category !== 'employees');
     setBookingCategory(category === 'custom_booking');
+    
+    setBookingCategory(category === 'non_employees');
   };
 
   useEffect(() => {
@@ -95,6 +97,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
           setLoading(false);
         }, 2000);
         toast.success("Booking added successfully");
+      
       })
       .catch(error => {
         toast.error("Failed to add booking");

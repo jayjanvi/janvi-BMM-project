@@ -1,8 +1,9 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
-
 import AuthService from "../services/authService";
 import { ChangePassword } from "../pages/ChangePassword";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css"; // Importing css
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -41,7 +42,28 @@ export const Navbar = () => {
     setActiveItem(itemName);
   };
 
+  // const handleLogout = () => {
+  //   AuthService.logout();
+  //   navigate("/login");
+  // };
   const handleLogout = () => {
+    confirmAlert({
+      title: "Confirm Logout",
+      message: "Are you sure you want to logout?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => confirmLogout()
+        },
+        {
+          label: "No",
+          onClick: () => {}
+        }
+      ]
+    });
+  };
+
+  const confirmLogout = () => {
     AuthService.logout();
     navigate("/login");
   };
@@ -95,12 +117,12 @@ export const Navbar = () => {
                   {/* Notification Menu */}
                   <li className="dropdown">
                     <a
-                      className="app-nav__item notification-num"
+                      className="app-nav__item"
                       href="#"
                       data-toggle="dropdown"
-                      aria-label="Show notifications" >
-                      <i className="icon-bell"></i>
-                      <span className="num">5</span>
+                      aria-label="Show settings" >
+                      <i className="icon-settings"></i>
+                    
                     </a>
                   </li>
 
@@ -131,36 +153,7 @@ export const Navbar = () => {
           </div>
         </div>
       </nav>
-      {/* <header>
-        <div className="container">
-          <div className="logo-brand">
-            <NavLink to="/">ThapaTechnical</NavLink>
-          </div>
-
-          <nav>
-            <ul>
-              <li>
-                <NavLink to="/"> Home </NavLink>
-              </li>
-              <li>
-                <NavLink to="/about"> About </NavLink>
-              </li>
-              <li>
-                <NavLink to="/service"> Services </NavLink>
-              </li>
-              <li>
-                <NavLink to="/contact"> Contact </NavLink>
-              </li>
-              <li>
-                <NavLink to="/addUser"> Add-User </NavLink>
-              </li>
-              <li>
-                <NavLink to="/login"> Login </NavLink>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header> */}
+      
     </>
   );
 };

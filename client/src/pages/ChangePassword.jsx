@@ -101,7 +101,7 @@ export const ChangePassword = ({ show, handleClose }) => {
                             isInvalid={!!errors.password} />
                         <span
                             onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
-                            className={`field-icon-password toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
+                            className={`field-icon-passwordCP toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                         ></span>
                         <Form.Control.Feedback type="invalid">{errors.oldPassword}</Form.Control.Feedback>
                     </Form.Group>
@@ -119,7 +119,7 @@ export const ChangePassword = ({ show, handleClose }) => {
                          isInvalid={!!errors.newPassword} />
                      <span
                          onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
-                         className={`field-icon-password toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
+                         className={`field-icon-passwordCP toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                      ></span>
                         <Form.Control.Feedback type="invalid">{errors.newPassword}</Form.Control.Feedback>
                     </Form.Group>
@@ -137,7 +137,7 @@ export const ChangePassword = ({ show, handleClose }) => {
                              isInvalid={!!errors.ChangePassword} />
                          <span
                              onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
-                             className={`field-icon-password toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
+                             className={`field-icon-passwordCP toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                          ></span>
                         <Form.Control.Feedback type="invalid">{errors.confirmPassword}</Form.Control.Feedback>
                     </Form.Group>

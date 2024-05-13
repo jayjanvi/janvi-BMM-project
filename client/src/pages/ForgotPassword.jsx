@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { ClipLoader } from 'react-spinners';
 import authService from '../services/authService';
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false); // State for spinner loading
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -28,17 +30,22 @@ export const ForgotPassword = () => {
     try {
       // Call the forgot password API
       const body={
+        
         email:email,
       }
+      setLoading(true);
       const response = await authService.forgotPassword(body);
       if (response.status === 200) {
         setSuccessMessage('Password reset instructions sent to your email.');
+        setLoading(false);
       } else {
         setError(response.data.message); // Display error message if API response indicates an error
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error:', error);
       setError('An error occurred. Please try again later.');
+      setLoading(false);
     }
   };
 
@@ -74,7 +81,13 @@ export const ForgotPassword = () => {
               {successMessage && <div className="success-message">{successMessage}</div>}
             </div>
             <div className="form-group btn-container">
-              <button className="btn btn-xl btn-primary">Submit</button>
+              <button className="btn btn-xl btn-primary">
+              {loading ? (
+                  <ClipLoader color={'#ffffff'} loading={loading} size={25} />
+                ) : (
+                  "Submit"
+                )}
+                </button>
             </div>
           </form>
         </div>

@@ -20,7 +20,7 @@ const sendEmail = async (email, subject, payload, template) => {
     const compiledTemplate = handlebars.compile(source);
     const options = () => {
       return {
-        from: process.env.FROM_EMAIL,
+        from: process.env.EMAIL_USERNAME,
         to: email,
         subject: subject,
         html: compiledTemplate(payload),
