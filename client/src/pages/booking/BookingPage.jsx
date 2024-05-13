@@ -25,7 +25,7 @@ export const BookingPage = () => {
   const fetchBooking = async () => {
     try {
       setListLoader(true);
-      const response = await bookingService.bookingList({ isEmployee: !showOthers });
+      const response = await bookingService.bookingList({ isEmployee: !showOthers, date:'May-2024' });
       setBookingResponse(response);
       setListLoader(false);
     } catch (error) {
@@ -69,7 +69,7 @@ export const BookingPage = () => {
             Others
           </a>
         </div>
-        <ClipLoader margin={5} cssOverride={{'margin-left':'50%','margin-top':'2%' }} loading={listLoader} />
+        <ClipLoader margin={5} cssOverride={{'marginLeft':'50%','marginTop':'2%' }} loading={listLoader} />
         {!showOthers ? <BookingList BookingResponse={bookingResponse} /> : <BookingListOthers BookingResponse={bookingResponse} />}
 
         <AddBooking isOpen={isOpenAddBooking} handleClose={handleClose} />

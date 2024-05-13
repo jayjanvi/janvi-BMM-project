@@ -4,7 +4,7 @@ const sendEmail = require("../utils/email/sendEmail");
 // User Registration
 const addUserService = async (data) => {
   try {
-    const { username, email, phone, password } = data;
+    const { username, email } = data;
 
     const userExist = await User.findOne({ email });
     if (userExist) {
@@ -22,7 +22,7 @@ const addUserService = async (data) => {
       },
       "./template/createUserConfirm.handlebars"
     );
-    return (data = {
+    return ({
       msg: "Registration successful",
       username: username,
       userId: userCreated._id.toString(),
@@ -63,7 +63,7 @@ async function findUsers(query) {
       .exec(); // Limit to first 10 records
     return users;
   } catch (error) {
-    throw error;
+    throw new Error(error, 500);
   }
 }
 

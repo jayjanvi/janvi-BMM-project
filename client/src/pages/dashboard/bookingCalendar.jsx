@@ -1,16 +1,38 @@
 import React, { useState } from "react";
-import { Navbar } from "../components/Navbar";
-import Button from 'react-bootstrap/Button';
-import { AddUser } from "./user/AddUser";
-import { UserList } from "./user/userList";
-import { Footer } from "../components/Footer";
+import { Navbar } from "../../components/Navbar";
+import { Footer } from "../../components/Footer";
+import moment from 'moment';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 
-export const Calendar = () => {
-  //Add user modal
-  const [show, setShow] = useState(false);
+const localizer = momentLocalizer(moment)
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+export const BookingCalendar = () => {
+
+  const handleNavigate = (date, view) => {
+    // You can perform any other actions based on the new date and view
+    console.log("Selected month:", moment(date).format('MMMM YYYY'));
+  };
+
+  const events = [
+    {
+      id: 0,
+      title: '1',
+      start: new Date(2024, 4, 13, 10, 0),
+      end: new Date(2024, 4, 13, 12, 0),
+    },
+    {
+      id: 2,
+      title: '5',
+      start: new Date(2024, 4, 13, 10, 0),
+      end: new Date(2024, 4, 13, 12, 0),
+    },
+    {
+      id: 1,
+      title: '2',
+      start: new Date(2024, 4, 15, 12, 0),
+      end: new Date(2024, 4, 15, 14, 0),
+    },
+  ];
 
   return (
     <div>
@@ -21,7 +43,18 @@ export const Calendar = () => {
             <h3 className="main-title">Calendar</h3>
             <div className="row">
               <div className="col-lg-9">
-                <div className="tile">Calendar</div>
+                <div className="tile">
+                  {/* Calendar */}
+                <Calendar
+                  localizer={localizer}
+                  events={events}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: 500,margin: '50px'  }}
+                  onNavigate={handleNavigate}
+                />
+                </div>
+                
               </div>
               <div className="col-lg-3">
                 <div className="tile">

@@ -5,8 +5,8 @@ class UserService {
   addBooking(booking) {
     return axios.post(URL+"/api/auth/addBooking", booking);
   }
-  bookingList(isEmployee) {
-    return axios.post(URL+"/api/auth/bookings", isEmployee);
+  bookingList(data) {
+    return axios.post(URL+"/api/auth/bookings", data);
   }
   deleteBooking(bookingId) {
     return axios.delete(URL+"/api/auth/deleteBooking/"+bookingId);

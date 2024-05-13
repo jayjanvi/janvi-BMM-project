@@ -6,7 +6,7 @@ const addBooking = async (req, res) => {
   };
 
   const bookingList = async (req, res) => {
-    const booking = await getAllBookings(req.body.isEmployee);
+    const booking = await getAllBookings(req.body);
     return res.json(booking);
   };
 
