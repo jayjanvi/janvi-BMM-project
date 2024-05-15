@@ -45,9 +45,8 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     setEmployeeListShow(category === 'employees');
     setNoteShow(category !== 'employees');
     setCountShow(category !== 'employees');
-    setBookingCategory(category === 'custom_booking');
-    
-    setBookingCategory(category === 'non_employees');
+    setBookingCategory(category !== 'employees');
+    // setBookingCategory(category === 'non_employees');
   };
 
   useEffect(() => {

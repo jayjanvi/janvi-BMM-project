@@ -38,14 +38,13 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-
       setLoading(true);
       const response = await AuthService.login(user);
       if (response.status === 200) {
         localStorage.setItem("user", JSON.stringify(response.data));
         navigate("/");
       } else {
-        alert("You are not registered to this service");
+        toast.error("You are not registered to this service");
       }
       toast.success("Login Successfully");
       setLoading(false);

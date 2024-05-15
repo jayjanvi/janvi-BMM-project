@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import authService from '../services/authService';
+import { toast } from "react-toastify";
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -34,17 +35,19 @@ export const ForgotPassword = () => {
         email:email,
       }
       setLoading(true);
+      
       const response = await authService.forgotPassword(body);
       if (response.status === 200) {
-        setSuccessMessage('Password reset instructions sent to your email.');
-        setLoading(false);
+        
+        toast.success('Password reset instructions sent to your email.');
+       
       } else {
-        setError(response.data.message); // Display error message if API response indicates an error
+        toast.error(response.data.message); // Display error message if API response indicates an error
         setLoading(false);
       }
     } catch (error) {
       console.error('Error:', error);
-      setError('An error occurred. Please try again later.');
+      toast.error('An error occurred. Please try again later.');
       setLoading(false);
     }
   };

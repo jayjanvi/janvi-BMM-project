@@ -115,7 +115,7 @@ export const Navbar = () => {
               <div className="h-100 d-lg-inline-flex align-items-center">
                 <ul className="app-nav">
                   {/* Notification Menu */}
-                  <li className="dropdown">
+                  {/* <li className="dropdown">
                     <a
                       className="app-nav__item"
                       href="#"
@@ -124,7 +124,7 @@ export const Navbar = () => {
                       <i className="icon-settings"></i>
                     
                     </a>
-                  </li>
+                  </li> */}
 
                   {/* User Menu */}
                   <li className={`nav-item dropdown ${dropdownOpen ? "show" : ""  }`} >

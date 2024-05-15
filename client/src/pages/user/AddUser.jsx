@@ -205,7 +205,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
               />
               <span
                 onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
-                className={`field-icon-password toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
+                className={`field-icon-passwordAddUser toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
               ></span>
               <Form.Control.Feedback type="invalid">
                 {errors.password}

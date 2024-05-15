@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
+import { ClipLoader } from 'react-spinners';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -68,10 +69,14 @@ export const ResetPassword = () => {
           userId: userId,
           password: formData.newPassword,
         }
+        setLoading(true);
         const response = await authService.resetPassword(body);
         if (response.status === 200) {
           toast.success("Password successfully changed!");
+          setTimeout(() => {
+          setLoading(false);
           navigate('/login');
+        }, 2000);
         } else {
           toast.error(response.data.message);
         }
@@ -93,6 +98,12 @@ export const ResetPassword = () => {
         <div className="login-content-rt">
           <div className="login-box">
             <Form >
+            <div className="logo-wrapper">
+              <img src="src/assets/images/logo.svg" alt="Rishabh Software" />
+              <span>Meal Facility</span>
+            </div>
+            <h3 className="login-head">Reset Password</h3>
+         
               <Form.Group className="mb-3" >
                 <Form.Label>New Password</Form.Label>
                 <Form.Control

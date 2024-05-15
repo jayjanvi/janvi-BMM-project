@@ -6,8 +6,10 @@ const formatDate = async (date) => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  return `${(day < 10 ? '0' : '') + day}-${(month < 10 ? '0' : '') + month}-${year}`;
-}
+  return `${(day < 10 ? "0" : "") + day}-${
+    (month < 10 ? "0" : "") + month
+  }-${year}`;
+};
 
 // Create booking
 const createBooking = async (data) => {
@@ -24,13 +26,16 @@ const createBooking = async (data) => {
         const user = await getUserById(booking.employee);
 
         // Send confirmed email to employee
-        sendEmail( user.email, "Lunch Meal Booking Confirmation",
+        sendEmail(
+          user.email,
+          "Lunch Meal Booking Confirmation",
           {
             name: user.name,
             bookingType: booking.mealType,
             startDate: await formatDate(booking.startDate),
             endDate: await formatDate(booking.endDate),
-          }, "./template/bookingConfirm.handlebars"
+          },
+          "./template/bookingConfirm.handlebars"
         );
       }
     } else {
@@ -131,7 +136,7 @@ async function getBookingsDetailsForEmployee(bookings, date) {
   const bookingObjs = [];
   const month = new Date(date).getMonth(); // Extract the month from the provided date
   const year = new Date(date).getFullYear(); // Extract the year from the provided date
-  const filteredBookings = bookings.filter(booking => {
+  const filteredBookings = bookings.filter((booking) => {
     const bookingMonth = booking.startDate.getMonth(); // Extract the month from the booking's startDate
     const bookingYear = booking.startDate.getFullYear(); // Extract the year from the booking's startDate
     return bookingMonth === month && bookingYear === year; // Check if the booking is in the specified month and year
@@ -149,42 +154,30 @@ async function getBookingsDetailsForEmployee(bookings, date) {
       throw new Error("User not found: " + booking.employee);
     }
 
-    let combinedBooking = false; // Flag to check if the booking can be combined with the previous one
-
-    if (userBookingsMap.has(booking.employee.toString())) {
-      // Check if the current booking can be combined with the previous one
-      const prevBookings = userBookingsMap.get(booking.employee.toString());
-      const prevBooking = prevBookings[prevBookings.length - 1];
-      if (prevBooking.endDate.getTime() === new Date(booking.startDate).getTime()) {
-        // If the end date of the previous booking is the same as the start date of the current booking, combine them
-        prevBooking.endDate = booking.endDate;
-        combinedBooking = true;
+    // If the booking cannot be combined with the previous one, create a new booking entry
+    let newBooking = {
+      id: booking._id,
+      empCode: user.code,
+      empName: user.username,
+      department: user.department,
+      mealType: booking.mealType,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
+      mealDate: getBusinessDays(booking.startDate, booking.endDate),
+    };
+    const employeeIdString = booking.employee.toString();
+    if (userBookingsMap.has(employeeIdString)) {
+      const oldEmp = userBookingsMap.get(booking.employee.toString());
+      const index = bookingObjs.findIndex((b) => b.empCode === oldEmp.empCode);
+      if (index !== -1) {
+        const mealDates = Array.from(new Set(oldEmp.mealDate.concat(getBusinessDays(booking.startDate, booking.endDate))));
+        const sortedMealDates = mealDates.sort((a, b) => a - b);
+        bookingObjs[index].mealDate = sortedMealDates;
+        bookingObjs[index].totalMeals = bookingObjs[index].mealDate.length;
       }
-    }
-
-    if (!combinedBooking) {
-      // If the booking cannot be combined with the previous one, create a new booking entry
-      const newBooking = {
-        id: booking._id,
-        empCode: user.code,
-        empName: user.username,
-        department: user.department,
-        mealType: booking.mealType,
-        startDate: booking.startDate,
-        endDate: booking.endDate,
-        totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
-        mealDate: getBusinessDays(booking.startDate, booking.endDate),
-      };
-      console.log(booking.employee);
-      const employeeIdString = booking.employee.toString();
-      console.log(userBookingsMap.has(employeeIdString));
-      if (userBookingsMap.has(employeeIdString)) {
-        console.log('aekeyvar');
-        userBookingsMap.get(booking.employee.toString()).push(newBooking);
-      } else {
-        console.log('yes');
-        userBookingsMap.set(booking.employee.toString(), [newBooking]);
-      }
+    } else {
+      userBookingsMap.set(booking.employee.toString(), newBooking);
       bookingObjs.push(newBooking);
     }
   }

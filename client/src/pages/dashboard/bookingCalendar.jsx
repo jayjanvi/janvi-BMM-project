@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import moment from 'moment';
@@ -8,10 +8,23 @@ const localizer = momentLocalizer(moment)
 
 export const BookingCalendar = () => {
 
+  
+  const [currentDate, setCurrentDate] = useState('');
+
   const handleNavigate = (date, view) => {
     // You can perform any other actions based on the new date and view
     console.log("Selected month:", moment(date).format('MMMM YYYY'));
   };
+
+  useEffect(() => {
+    const getCurrentDate = () => {
+      const date = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    };
+
+    setCurrentDate(getCurrentDate());
+  }, []);
 
   const events = [
     {
@@ -58,7 +71,7 @@ export const BookingCalendar = () => {
               </div>
               <div className="col-lg-3">
                 <div className="tile">
-                  <h3 className="tile-title">Saturday, 19 Dec 2022</h3>
+                  <h3 className="tile-title">{currentDate}</h3>
                   <div className="booking-wrapper">
                     <div className="booking-block">
                       <h5>Bookings</h5>
@@ -96,6 +109,7 @@ export const BookingCalendar = () => {
                     </div>
                   </div>
                 </div>
+                
               </div>
             </div>
           </div>

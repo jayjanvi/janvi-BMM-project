@@ -55,17 +55,6 @@ export const BookingListOthers = ({ BookingResponse }) => {
         setSortConfig({ key, direction });
     };
 
-    // const deleteBooking = (bookingId) => {
-    //     bookingService.deleteBooking(bookingId)
-    //         .then(response => {
-    //             toast.success("Booking deleted successfully");
-    //             window.location.reload();
-    //         })
-    //         .catch(error => {
-    //             toast.error("Failed to delete booking");
-    //         });
-    // }
-
     const deleteBooking = (bookingId) => {
         confirmAlert({
           title: "Confirm Delete",
@@ -76,8 +65,10 @@ export const BookingListOthers = ({ BookingResponse }) => {
               onClick: () => {
                 bookingService.deleteBooking(bookingId)
                   .then(response => {
-                    toast.success("Booking deleted successfully");
-                    window.location.reload(); // Reloading the page to reflect changes
+                    toast.success("Booking deleted successfully"); 
+                    setTimeout(() => {
+                        window.location.reload(); // Reloading the page to reflect changes
+                      }, 2000); 
                   })
                   .catch(error => {
                     toast.error("Failed to delete booking");

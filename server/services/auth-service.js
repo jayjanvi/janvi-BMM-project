@@ -58,9 +58,9 @@ const requestPasswordReset = async (email) => {
   }).save();
 
   const link = `${clientURL}/passwordReset?token=${resetToken}&id=${user._id}`;
-  sendEmail(user.email, "Password Reset Request", {name: user.name, link: link,}, "./template/requestResetPassword.handlebars");
+  sendEmail(user.email, "Password Reset Request", {name: user.name,link: link,}, "./template/requestResetPassword.handlebars");
   return link;
-};6
+};
 
 const resetPassword = async (userId, token, password) => {
   let passwordResetToken = await Token.findOne({ userId });
@@ -91,7 +91,7 @@ const changePassword = async (userId, password) => {
     { new: true }
   );
   const user = await User.findById({ _id: userId });
-  sendEmail( user.email, "Password Reset Successfully", { name: user.name, }, "./template/resetPassword.handlebars");
+  sendEmail( user.email, "Password Reset Successfully", { name: user.name,changedPassword: password }, "./template/resetPassword.handlebars");
   return true;
 };
 

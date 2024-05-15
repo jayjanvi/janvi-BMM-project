@@ -68,7 +68,7 @@ export const UserFile = () => {
                     </div>
                 </div>
             </div>
-            <ClipLoader margin={5} cssOverride={{'margin-left':'50%','margin-top':'2%' }} loading={listLoader} />
+            <ClipLoader margin={5} cssOverride={{'marginLeft':'50%','marginTop':'2%' }} loading={listLoader} />
       
             {userResponse && <UserList userResponse={userResponse} />}
             <AddUser key={show.toString()} show={show} handleClose={handleClose} onAddUser={addUser} />

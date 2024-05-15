@@ -48,9 +48,9 @@ export const Home = () => {
               <a href="#" aria-label="Linkedin">
                 <i className="icon-linkedin"></i>
               </a>
-              <a href="#" aria-label="Twitter">
+              {/* <a href="#" aria-label="Twitter">
                 <i className="icon-twitter"></i>
-              </a>
+              </a> */}
             </div>
           </div>
         </div>

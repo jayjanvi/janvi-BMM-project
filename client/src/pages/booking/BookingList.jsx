@@ -77,7 +77,9 @@ export const BookingList = ({ BookingResponse }) => {
             bookingService.deleteBooking(bookingId)
               .then(response => {
                 toast.success("Booking deleted successfully");
+                setTimeout(() => {
                 window.location.reload(); // Reloading the page to reflect changes
+              }, 2000); 
               })
               .catch(error => {
                 toast.error("Failed to delete booking");
