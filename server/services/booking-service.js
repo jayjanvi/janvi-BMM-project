@@ -18,13 +18,12 @@ const createBooking = async (data) => {
 
     if (data.employee.length !== 0) {
       for (const employeeId of data.employee) {
-        const bookingData = { ...data, employee: employeeId }; // Replace `employee` array with individual employeeId
+        const bookingData = { ...data, employee: employeeId };
 
         const booking = await Booking.create(bookingData);
         bookings.push(booking);
 
         const user = await getUserById(booking.employee);
-
         // Send confirmed email to employee
         sendEmail(
           user.email,
@@ -53,17 +52,21 @@ const createBooking = async (data) => {
 // Delete booking by ID
 const deleteBookingById = async (bookingId) => {
   try {
-    const updatedBooking = await Booking.findByIdAndUpdate(
-      bookingId,
-      { isDeleted: true },
-      { new: true }
-    );
-
-    if (!updatedBooking) {
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
       throw new Error("Booking not found");
     }
 
-    return updatedBooking;
+    const result = await Booking.updateMany(
+      { employee: booking.employee },
+      { isDeleted: true }
+    );
+
+    if (result.nModified === 0) {
+      throw new Error("No bookings found for this employee");
+    }
+
+    return result;
   } catch (error) {
     throw new Error("Error updating booking: " + error.message);
   }
@@ -99,7 +102,7 @@ const getAllBookings = async (data) => {
     if (data.isEmployee) {
       return getBookingsDetailsForEmployee(employeeBooking, data.date);
     } else {
-      return nonEmployeeBooking;
+      return getBookingsDetailsForNonEmployee(nonEmployeeBooking, data.date);
     }
   } catch (error) {
     throw new Error("Error fetching bookings: " + error.message);
@@ -131,25 +134,58 @@ const getAllBookings = async (data) => {
 //   }
 //   return bookingObjs;
 // }
-
-async function getBookingsDetailsForEmployee(bookings, date) {
+async function getBookingsDetailsForNonEmployee(bookings, date) {
   const bookingObjs = [];
-  const month = new Date(date).getMonth(); // Extract the month from the provided date
-  const year = new Date(date).getFullYear(); // Extract the year from the provided date
+  const month = date.split("-")[0];
+  const year = date.split("-")[1];
+
   const filteredBookings = bookings.filter((booking) => {
     const bookingMonth = booking.startDate.getMonth(); // Extract the month from the booking's startDate
     const bookingYear = booking.startDate.getFullYear(); // Extract the year from the booking's startDate
-    return bookingMonth === month && bookingYear === year; // Check if the booking is in the specified month and year
+    return (
+      bookingMonth === parseInt(month, 10) && bookingYear === parseInt(year, 10)
+    );
   });
 
-  const userBookingsMap = new Map(); // Map to store bookings per user
-
-  // Iterate through each filtered booking
+  
   for (const booking of filteredBookings) {
-    let user = {}; // Initialize user object
+    let newBooking = {
+      bookingCategory: booking.bookingCategory,
+      notes: booking.notes,
+      mealType: booking.mealType,
+      date: formatDateList(booking.startDate) +'-'+ formatDateList(booking.endDate),
+      totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
+      mealDate: getBusinessDays(booking.startDate, booking.endDate),
+    };
+    bookingObjs.push(newBooking);
+  }
+  return bookingObjs;
+}
 
+function formatDateList(dateString) {
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  return new Date(dateString).toLocaleDateString('en-GB', options);
+};
+
+async function getBookingsDetailsForEmployee(bookings, date) {
+  const bookingObjs = [];
+  const month = date.split("-")[0];
+  const year = date.split("-")[1];
+
+  const filteredBookings = bookings.filter((booking) => {
+    const bookingMonth = booking.startDate.getMonth(); // Extract the month from the booking's startDate
+    const bookingYear = booking.startDate.getFullYear(); // Extract the year from the booking's startDate
+    return (
+      bookingMonth === parseInt(month, 10) && bookingYear === parseInt(year, 10)
+    );
+  });
+
+  const userBookingsMap = new Map();
+
+  for (const booking of filteredBookings) {
+    let user = {};
     try {
-      user = await getUserById(booking.employee); // Get user details for the booking's employee
+      user = await getUserById(booking.employee);
     } catch (error) {
       throw new Error("User not found: " + booking.employee);
     }
@@ -166,23 +202,48 @@ async function getBookingsDetailsForEmployee(bookings, date) {
       totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
       mealDate: getBusinessDays(booking.startDate, booking.endDate),
     };
-    const employeeIdString = booking.employee.toString();
-    if (userBookingsMap.has(employeeIdString)) {
-      const oldEmp = userBookingsMap.get(booking.employee.toString());
+
+    const employeeIdWithType = booking.employee+newBooking.mealType;
+
+    if (userBookingsMap.has(employeeIdWithType)) {
+      const oldEmp = userBookingsMap.get(employeeIdWithType);
       const index = bookingObjs.findIndex((b) => b.empCode === oldEmp.empCode);
       if (index !== -1) {
-        const mealDates = Array.from(new Set(oldEmp.mealDate.concat(getBusinessDays(booking.startDate, booking.endDate))));
+        const mealDates = Array.from(
+          new Set( oldEmp.mealDate.concat( getBusinessDays(booking.startDate, booking.endDate)))
+        );
         const sortedMealDates = mealDates.sort((a, b) => a - b);
-        bookingObjs[index].mealDate = sortedMealDates;
-        bookingObjs[index].totalMeals = bookingObjs[index].mealDate.length;
+        if (bookingObjs[index].mealType === newBooking.mealType) {
+          bookingObjs[index].mealDate = sortedMealDates;
+          bookingObjs[index].totalMeals = bookingObjs[index].mealDate.length;
+        }
       }
     } else {
-      userBookingsMap.set(booking.employee.toString(), newBooking);
+      userBookingsMap.set(booking.employee+newBooking.mealType, newBooking);
       bookingObjs.push(newBooking);
     }
   }
 
   return bookingObjs;
+}
+
+async function getBookingsByDate(date) {
+  try {
+    const month = date.split("-")[0]; // Extract the month from the provided date
+    const year = date.split("-")[1]; // Extract the year from the provided date
+    const bookings = await Booking.find({ isDeleted: false });
+    const filteredBookings = bookings.filter((booking) => {
+      const bookingMonth = booking.startDate.getMonth(); // Extract the month from the booking's startDate
+      const bookingYear = booking.startDate.getFullYear(); // Extract the year from the booking's startDate
+      return (
+        bookingMonth === parseInt(month, 10) &&
+        bookingYear === parseInt(year, 10)
+      );
+    });
+    return filteredBookings;
+  } catch (error) {
+    throw new Error("Error fetching bookings: " + error.message);
+  }
 }
 
 function getBusinessDaysCount(startDate, endDate) {
@@ -235,5 +296,6 @@ module.exports = {
   deleteBookingById,
   updateBookingById,
   getAllBookings,
+  getBookingsByDate,
   getBookingById,
 };

@@ -86,15 +86,15 @@ export const BookingListOthers = ({ BookingResponse }) => {
     return (
         <>
             <div>
-                <Table striped bordered hover>
+                <Table hover className="table-custom">
                     <thead>
                         <tr>
                             {BookingResponse && (
                                 <>
                                     <th>Booking Category</th>
-                                    <th onClick={() => handleSort('date')}>Date{renderSortIcon('date')}</th>
-                                    <th onClick={() => handleSort('bookingCount')}>Booking Count{renderSortIcon('bookingCount')}</th>
-                                    <th onClick={() => handleSort('notes')}>Notes{renderSortIcon('notes')}</th>
+                                    <th>Date</th>
+                                    <th>Booking Count</th>
+                                    <th>Notes</th>
                                     <th>Action</th>
                                 </>
                             )}
@@ -104,8 +104,8 @@ export const BookingListOthers = ({ BookingResponse }) => {
                         {currentBookings.map((booking, index) => (
                             <tr key={booking._id}>
                                 <td>{booking.bookingCategory}</td>
-                                <td>{booking.startDate}</td>
-                                <td>{booking.bookingCount}</td>
+                                <td>{booking.date}</td>
+                                <td>{booking.mealDate && booking.mealDate.join(', ')}</td>
                                 <td>{booking.notes}</td>
                                 <td><i style={{ cursor: 'pointer' }} onClick={() => deleteBooking(booking._id)}><MdDelete size={18} /></i></td>
                             </tr>

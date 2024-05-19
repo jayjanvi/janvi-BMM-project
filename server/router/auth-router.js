@@ -20,6 +20,7 @@ router.route("/findUsers").post(userControllers.searchUsers);
 // Booking
 router.route("/addBooking").post(bookingControllers.addBooking);
 router.route("/bookings").post(bookingControllers.bookingList);
+router.route("/calendar").post(bookingControllers.bookingListByDate);
 router.route("/deleteBooking/:id").delete(bookingControllers.deleteBooking);
 
 module.exports = router;

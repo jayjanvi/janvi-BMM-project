@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import { MdDelete } from "react-icons/md";
-import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import bookingService from "../../services/bookingService";
 import { toast } from 'react-toastify';
 import { confirmAlert } from "react-confirm-alert";
@@ -22,49 +21,37 @@ export const BookingList = ({ BookingResponse }) => {
     }
   }, [BookingResponse]);
 
-  const sortedBookings = bookings.sort((a, b) => {
-    if (!sortConfig) {
-      return 0;
-    }
-    const key = sortConfig.key;
-    const direction = sortConfig.direction === 'asc' ? 1 : -1;
-    if (a[key] < b[key]) return -1 * direction;
-    if (a[key] > b[key]) return 1 * direction;
-    return 0;
-  });
+  // const sortedBookings = bookings.sort((a, b) => {
+  //   if (!sortConfig) {
+  //     return 0;
+  //   }
+  //   const key = sortConfig.key;
+  //   const direction = sortConfig.direction === 'asc' ? 1 : -1;
+  //   if (a[key] < b[key]) return -1 * direction;
+  //   if (a[key] > b[key]) return 1 * direction;
+  //   return 0;
+  // });
 
   const indexOfLastUser = currentPage * BookingsPerPage;
   const indexOfFirstUser = indexOfLastUser - BookingsPerPage;
-  const currentBookings = sortedBookings.slice(indexOfFirstUser, indexOfLastUser);
+  const currentBookings = bookings.slice(indexOfFirstUser, indexOfLastUser);
 
-  const renderSortIcon = (key) => {
-    if (!sortConfig || sortConfig.key !== key) { return <FaSort />; }
-    return (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />);
-  };
+  // const renderSortIcon = (key) => {
+  //   if (!sortConfig || sortConfig.key !== key) { return <FaSort />; }
+  //   return (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />);
+  // };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  // const deleteBooking = (bookingId) => {
-  //   bookingService.deleteBooking(bookingId)
-  //     .then(response => {
-  //       toast.success("Booking deleted successfully");
-  //       window.location.reload();
-  //     })
-  //     .catch(error => {
-  //       toast.error("Failed to delete booking");
-  //     });
-  // }
-
+  // const handleSort = (key) => {
+  //   let direction = 'asc';
+  //   if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+  //     direction = 'desc';
+  //   }
+  //   setSortConfig({ key, direction });
+  // };
 
   const deleteBooking = (bookingId) => {
     confirmAlert({
@@ -78,8 +65,8 @@ export const BookingList = ({ BookingResponse }) => {
               .then(response => {
                 toast.success("Booking deleted successfully");
                 setTimeout(() => {
-                window.location.reload(); // Reloading the page to reflect changes
-              }, 2000); 
+                  window.location.reload(); // Reloading the page to reflect changes
+                }, 2000);
               })
               .catch(error => {
                 toast.error("Failed to delete booking");
@@ -88,25 +75,26 @@ export const BookingList = ({ BookingResponse }) => {
         },
         {
           label: "No",
-          onClick: () => {}
+          onClick: () => { }
         }
       ]
     });
   }
-    return (
+  return (
     <>
       <div>
-        <Table striped bordered hover>
+
+        <Table hover className="table-custom">
           <thead>
             <tr>
               {BookingResponse && (
                 <>
-                  <th onClick={() => handleSort('code')}>Employee Code{renderSortIcon('code')}</th>
-                  <th onClick={() => handleSort('name')}>Employee Name {renderSortIcon('name')} </th>
-                  <th onClick={() => handleSort('department')}>Department{renderSortIcon('department')} </th>
+                  <th>Employee Code</th>
+                  <th>Employee Name</th>
+                  <th>Department </th>
                   <th>Meal Type</th>
-                  <th onClick={() => handleSort('mealsBooked')}>Total Meals Booked{renderSortIcon('mealsBooked')} </th>
-                  <th className="mealDates" onClick={() => handleSort('mealDates')}>Meal Dates{renderSortIcon('mealDates')}</th>
+                  <th>Total Meals Booked </th>
+                  <th >Meal Dates</th>
                   <th>Actions</th>
                 </>
               )}
@@ -132,7 +120,7 @@ export const BookingList = ({ BookingResponse }) => {
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             />
-            {Array.from({ length: Math.ceil(sortedBookings.length / BookingsPerPage) }).map((_, index) => (
+            {Array.from({ length: Math.ceil(bookings.length / BookingsPerPage) }).map((_, index) => (
               <Pagination.Item
                 key={index}
                 active={index + 1 === currentPage}
@@ -142,7 +130,7 @@ export const BookingList = ({ BookingResponse }) => {
             ))}
             <Pagination.Next
               onClick={() => handlePageChange(currentPage + 1)}
-              disabled={indexOfLastUser >= sortedBookings.length} />
+              disabled={indexOfLastUser >= bookings.length} />
           </Pagination>
         </div>
       </div>

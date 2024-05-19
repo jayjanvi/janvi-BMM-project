@@ -73,7 +73,7 @@ export const UserList = ({ userResponse }) => {
           Others
         </a>
       </div>
-      <Table striped bordered hover>
+      <Table hover className="table-custom">
         <thead>
           <tr>
             <th>No.</th>

@@ -1,4 +1,4 @@
-const { createBooking, getAllBookings, deleteBookingById } = require("../services/booking-service");
+const { createBooking, getAllBookings, deleteBookingById, getBookingsByDate } = require("../services/booking-service");
 
 const addBooking = async (req, res) => {
     const booking = await createBooking(req.body);
@@ -15,8 +15,14 @@ const addBooking = async (req, res) => {
     return res.json(booking);
   };
 
+  const bookingListByDate = async (req, res) => {
+    const booking = await getBookingsByDate(req.body.date);
+    return res.json(booking);
+  };
+
   module.exports = {
     addBooking,
     bookingList,
     deleteBooking,
+    bookingListByDate,
   };

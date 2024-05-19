@@ -11,6 +11,9 @@ class UserService {
   deleteBooking(bookingId) {
     return axios.delete(URL+"/api/auth/deleteBooking/"+bookingId);
   }
+  bookingListByDate(data) {
+    return axios.post(URL+"/api/auth/calendar", data);
+  }
 }
 
 export default new UserService();
