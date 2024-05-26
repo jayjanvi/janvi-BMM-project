@@ -5,14 +5,14 @@ import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 export const UserList = ({ userResponse }) => {
 
-  const [users, setUsers] = useState([]); // Number of users to display per page  
+  const [users, setUsers] = useState([]);  
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [showOthers, setShowOthers] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
-    // Fetch users list when the component mounts
+  
     if (userResponse) {
       setCurrentPage(1)
       if (showOthers) {
@@ -31,36 +31,23 @@ export const UserList = ({ userResponse }) => {
     }
   };
 
-  const sortedUsers = users.sort((a, b) => {
-    if (!sortConfig) {
-      return 0;
-    }
-    const key = sortConfig.key;
-    const direction = sortConfig.direction === 'asc' ? 1 : -1;
-    if (a[key] < b[key]) return -1 * direction;
-    if (a[key] > b[key]) return 1 * direction;
-    return 0;
-  });
+  // const sortedUsers = users.sort((a, b) => {
+  //   if (!sortConfig) {
+  //     return 0;
+  //   }
+  //   const key = sortConfig.key;
+  //   const direction = sortConfig.direction === 'asc' ? 1 : -1;
+  //   if (a[key] < b[key]) return -1 * direction;
+  //   if (a[key] > b[key]) return 1 * direction;
+  //   return 0;
+  // });
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = sortedUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-  };
-
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const renderSortIcon = (key) => {
-    if (!sortConfig || sortConfig.key !== key) { return <FaSort />; }
-    return (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />);
   };
 
   return (
@@ -77,10 +64,10 @@ export const UserList = ({ userResponse }) => {
         <thead>
           <tr>
             <th>No.</th>
-            <th onClick={() => handleSort('username')}>Username{renderSortIcon('username')}</th>
-            <th onClick={() => handleSort('email')}>Email {renderSortIcon('email')} </th>
-            <th onClick={() => handleSort('phone')}>Phone {renderSortIcon('phone')}</th>
-            {!showOthers && <th onClick={() => handleSort('department')}>Department {renderSortIcon('department')}</th>}
+            <th>Username</th>
+            <th >Email  </th>
+            <th >Phone</th>
+            {!showOthers && <th> Department </th>}
           </tr>
         </thead>
         <tbody>
@@ -102,7 +89,7 @@ export const UserList = ({ userResponse }) => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           />
-          {Array.from({ length: Math.ceil(sortedUsers.length / usersPerPage) }).map((_, index) => (
+          {Array.from({ length: Math.ceil(users.length / usersPerPage) }).map((_, index) => (
             <Pagination.Item
               key={index}
               active={index + 1 === currentPage}
@@ -112,7 +99,7 @@ export const UserList = ({ userResponse }) => {
           ))}
           <Pagination.Next
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={indexOfLastUser >= sortedUsers.length} />
+            disabled={indexOfLastUser >= users.length} />
         </Pagination>
       </div>
     </>

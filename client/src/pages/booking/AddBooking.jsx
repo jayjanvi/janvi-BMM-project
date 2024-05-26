@@ -9,6 +9,17 @@ import userService from "../../services/userService";
 
 export const AddBooking = ({ isOpen, handleClose }) => {
 
+  const initialFormData = {
+    category: 'employees',
+    mealType: '',
+    startDate: '',
+    endDate: '',
+    bookingCategory: '',
+    notes: '',
+    bookingCount: '',
+    employee: []
+  };
+
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [noteShow, setNoteShow] = useState(false);
@@ -20,7 +31,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
 
   const [bookingCategoryShow, setBookingCategory] = useState(false);
   const [employeeListShow, setEmployeeListShow] = useState(false);
-  const [loading, setLoading] = useState(false); // State for spinner loading
+  const [loading, setLoading] = useState(false); 
 
   const [formData, setFormData] = useState({
     category: 'employees',
@@ -33,7 +44,6 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     employee: []
   });
 
-  // Handle search input change
   const handleSearchInputChange = (e) => {
     fetchUsers(e.target.value.toLowerCase());
     setSearchQuery(e.target.value);
@@ -58,7 +68,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     const { name, value, type, checked } = e.target;
     setFormData(prevState => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : value, //selectedDate: date
+      [name]: type === 'checkbox' ? checked : value, 
     }));
   };
 
@@ -87,12 +97,16 @@ export const AddBooking = ({ isOpen, handleClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    if (formData.category === "employees" && formData.employee.length === 0) {
+      toast.error("Please select employee");
+      setLoading(false);
+      return;
+    }
 
     bookingService.addBooking(formData)
       .then(response => {
         setTimeout(() => {
           handleClose();
-          window.location.reload();
           setLoading(false);
         }, 2000);
         toast.success("Booking added successfully");
@@ -102,6 +116,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
         toast.error("Failed to add booking");
         setLoading(false);
       });
+      setFormData(initialFormData);
   };
 
   const isWeekday = (date) => {
@@ -165,10 +180,12 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                       const [start, end] = dates;
                       setStartDate(start);
                       setEndDate(end);
+                      const startUTC = start ? new Date(start).toISOString() : null;
+                      const endUTC = end ? new Date(end).toISOString() : null;
                       setFormData(prevState => ({
                         ...prevState,
-                        startDate: start,
-                        endDate: end,
+                        startDate: startUTC,
+                        endDate: endUTC,
                       }));
                     }}
                     selectsRange
@@ -179,9 +196,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                     className="form-control border-right-0 datepicker-icn" />
 
                   <div className="input-group-append bg-transparent">
-                    <span className="input-group-text bg-transparent" id="basic-addon2">
-                      <i className="icon-calendar" onClick={() => document.getElementById('datepicker-input').focus()}></i></span>
-                  </div>
+                     </div>
                 </div>
               </div>
               {bookingCategoryShow && <div className="form-group">
@@ -193,9 +208,6 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                 <textarea className="form-control" rows="4" placeholder="Type here.." name="notes" value={formData.notes} onChange={handleChange}></textarea>
               </div>}
 
-
-
-              {/* Conditionally render search bar */}
               {showSearchBar && (
                 <div className="form-group">
                   <label>Select User</label>
@@ -238,9 +250,9 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                                 <input
                                   className="checkbox__input"
                                   type="checkbox"
-                                  name={`employee-${user._id}`} // Unique name for each checkbox
-                                  checked={formData.employee.includes(user._id)} // Check if user's _id is in employee array
-                                  onChange={(e) => handleCheckboxChange(e, user)} // Pass user object to handleCheckboxChange
+                                  name={`employee-${user._id}`} 
+                                  checked={formData.employee.includes(user._id)} 
+                                  onChange={(e) => handleCheckboxChange(e, user)}
                                 />
                                 <span className="checkbox__checkmark"></span>
                               </label>

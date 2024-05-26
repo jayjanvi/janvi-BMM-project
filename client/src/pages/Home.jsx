@@ -5,12 +5,11 @@ import { AddUser } from "./user/AddUser";
 import { UserList } from "./user/userList";
 
 export const Home = () => {
-  //Add user modal
+
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   
-  // const handleShow = () => setShow(true)
   const handleShow = () => {
     console.log('handle show called ')
     setShow(true)
@@ -33,6 +32,7 @@ export const Home = () => {
       </div>
       <AddUser key={show.toString()} show={show} handleClose={handleClose} />
       <UserList />
+      
       {/* Footer */}
       <div className="footer">
         <div className="container">
@@ -48,9 +48,9 @@ export const Home = () => {
               <a href="#" aria-label="Linkedin">
                 <i className="icon-linkedin"></i>
               </a>
-              {/* <a href="#" aria-label="Twitter">
+              <a href="#" aria-label="Twitter">
                 <i className="icon-twitter"></i>
-              </a> */}
+              </a>
             </div>
           </div>
         </div>

@@ -4120,7 +4120,11 @@ fieldset:disabled .btn {
 }
 
 .navbar {
-  position: relative;
+  position: fixed; /* Make the navbar fixed at the top */
+  top: 0;         /* Position it at the top */
+  left: 0;        /* Position it to the left edge */
+  right: 0;       /* Position it to the right edge */
+  z-index: 1030;  /* Ensure it stays above other content */
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -4129,6 +4133,17 @@ fieldset:disabled .btn {
   padding-bottom: 0.5rem;
   background-color: #182c56;
 }
+
+
+  /* position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: #182c56; */
+/* } */
 .navbar > .container,
 .navbar > .container-fluid,
 .navbar > .container-sm,
@@ -11809,6 +11824,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 }
 
 .tile {
+  margin-top: 20px;
   position: relative;
   background: #ffffff;
   border-radius: 3px;
@@ -12755,7 +12771,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  height: 60px;
 }
 @media (max-width: 991.98px) {
   .footer .footer-block {
@@ -12869,6 +12885,15 @@ img {
 .booking-wrapper {
   display: block;
 }
+/* 
+.booking-wrapper {
+  display: flex;
+  align-items: center;
+} */
+
+.booking-inner-wrapper {
+  display: flex;
+}
 
 .booking-wrapper .booking-block {
   display: flex;
@@ -12931,6 +12956,7 @@ img {
 }
 
 .container-head {
+  margin-top: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -13100,6 +13126,10 @@ img {
 .form-group .search-wrapper {
   position: relative;
 }
+
+.form-group .search-wrapper booking {
+  width: 50px;
+}
 .form-group .search-wrapper .search-icon {
   position: absolute;
   font-size: 18px;
@@ -13175,6 +13205,7 @@ img {
 
 /* css of list table */
 .table-custom {
+
   padding: 0; /* 50px padding on all sides */
   border-collapse: separate; /* Ensure padding works inside the cells */
   border-spacing: 0; /* Prevents cell spacing */
@@ -13194,6 +13225,7 @@ img {
   padding: 10px;
   
 }
+
 
 .left-aligned-content select {
   height: 40px; 
@@ -13216,3 +13248,50 @@ img {
   border: 1px solid #e23e3f;
   /* border-color: #e23e3f; */
 }
+
+/* Add this CSS to your stylesheet */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adjust spacing as needed */
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  right:10px 
+}
+
+.tooltip-container .tooltip-text {
+  visibility: hidden;
+  width: 340px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 15px;
+  position: absolute;
+  z-index: 1;
+  top: 145%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+select {
+  padding: 5px;
+  margin-right: 10px; /* Adjust spacing as needed */
+}
+
+.btn-primary-filter {
+  margin-left: 10px; /* Adjust spacing as needed */
+}
+

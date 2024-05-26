@@ -10,7 +10,6 @@ import { ClipLoader } from 'react-spinners';
 
 export const UserFile = () => {
     useEffect(() => {
-        // Fetch users list when the component mounts
         fetchUsers();
     }, []);
     const [show, setShow] = useState(false);

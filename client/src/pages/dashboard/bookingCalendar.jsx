@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 import bookingService from '../../services/bookingService';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 
@@ -43,28 +44,42 @@ export const BookingCalendar = () => {
   }, [selectedDay, bookings]);
 
   const getCount = (bookings) => {
+
     const filteredBookings = bookings.filter(booking => {
+      // Convert booking start and end dates to Date objects
       const startDate = new Date(booking.startDate);
       const endDate = new Date(booking.endDate);
-      return selectedDay >= startDate && selectedDay <= endDate;
-    });
 
+      // Normalize the dates to only include the date part (ignore the time)
+      const selectedDate = new Date(selectedDay.toISOString().split('T')[0]);
+      const startDateOnly = new Date(startDate.toISOString().split('T')[0]);
+      const endDateOnly = new Date(endDate.toISOString().split('T')[0]);
+
+      // Filter the bookings based on the normalized date
+      return selectedDate >= startDateOnly && selectedDate <= endDateOnly;
+    });
     const employeeCount = filteredBookings.filter(booking => booking.category === 'employees').length;
-    console.log('emp',filteredBookings.filter(booking => booking.category === 'employees'));
+    console.log('emp', filteredBookings.filter(booking => booking.category === 'employees'));
     const nonEmployeeCount = filteredBookings.filter(booking => booking.category === 'non_employees').length;
-    console.log('non-emp',filteredBookings.filter(booking => booking.category === 'non_employees'));
+    console.log('non-emp', filteredBookings.filter(booking => booking.category === 'non_employees'));
     const customBookingCount = filteredBookings.filter(booking => booking.category === 'custom_booking').length;
-    console.log('custom',filteredBookings.filter(booking => booking.category === 'custom_booking'));
+    console.log('custom', filteredBookings.filter(booking => booking.category === 'custom_booking'));
     return { employee: employeeCount, nonemployee: nonEmployeeCount, customBooking: customBookingCount };
   }
 
   const createEventsFromBookings = (bookings) => {
-    return bookings.map((booking, index) => ({
-      id: index,
-      title: booking.mealType,
-      start: new Date(booking.startDate),
-      end: new Date(booking.endDate),
-    }));
+
+    return bookings.map((booking, index) => {
+      const startDate = moment(booking.startDate).utc().toDate();
+      const endDate = moment(booking.endDate).endOf('day').utc().toDate();
+
+      return {
+        id: index,
+        title: booking.mealType,
+        start: startDate,
+        end: endDate,
+      };
+    });
   };
 
   const fetchBooking = async (date) => {
@@ -96,11 +111,16 @@ export const BookingCalendar = () => {
                     events={events}
                     startAccessor="start"
                     endAccessor="end"
-                    views={['month']}
-                    style={{ height: 500, margin: '50px' }}
+                    // views={['month']}
+                    style={{ height: 500, margin: '50px', }}
                     onNavigate={handleNavigate}
                     onSelectSlot={handleSelectSlot}
                     dayPropGetter={customSlotPropGetter}
+                  // eventPropGetter={(myEventsList) => {
+                  //   const backgroundColor = myEventsList.colorEvento ? myEventsList.colorEvento : '#70f45e';
+                  //   const color = myEventsList.color ? myEventsList.color : 'white';
+                  //   return { style: { backgroundColor ,color} }
+                  // }}
                   />
                 </div>
 
@@ -109,9 +129,21 @@ export const BookingCalendar = () => {
                 <div className="tile">
                   <h3 className="tile-title">{selectedDay && getDateInFormat(selectedDay)}</h3>
                   <div className="booking-wrapper">
+                    <div style={{ display: 'flex', }}>
+                      <div style={{ display: 'flex', }}>
+                        <div className="booking-block" style={{ width: '150px', marginRight: '10px', backgroundColor: "#70f45e" }}>
+                          <h5>Lunch</h5>
+                        </div>
+                        <div className="booking-block" style={{ width: '150px', backgroundColor: "#ff9e02" }}>
+                          <h5>Dinner</h5>
+                        </div>
+                      </div>
+                    </div>
                     <div className="booking-block">
                       <h5>Bookings</h5>
-                      <a href="#" aria-label="Add Employees"><img src="src/assets/images/add-btn-1.svg" alt="Add"></img></a>
+                      <Link to="/booking" aria-label="Add Employees">
+                        <img src="src/assets/images/add-btn-1.svg" alt="Add"></img>
+                      </Link>
                     </div>
                     <div className="booking-block employees">
                       <div className="booking-block-lt">
@@ -121,7 +153,9 @@ export const BookingCalendar = () => {
                           <h3>{counts.employee}</h3>
                         </div>
                       </div>
-                      <a href="#" aria-label="Add Employees"><img src="src/assets/images/add-btn-2.svg" alt="Add"></img></a>
+                      <Link to="/booking" aria-label="Add Employees">
+                        <img src="src/assets/images/add-btn-2.svg" alt="Add"></img>
+                      </Link>
                     </div>
                     <div className="booking-block non-employees">
                       <div className="booking-block-lt">
@@ -131,7 +165,9 @@ export const BookingCalendar = () => {
                           <h3>{counts.nonemployee}</h3>
                         </div>
                       </div>
-                      <a href="#" aria-label="Add Employees"><img src="src/assets/images/add-btn-2.svg" alt="Add"></img></a>
+                      <Link to="/booking" aria-label="Add Employees">
+                        <img src="src/assets/images/add-btn-2.svg" alt="Add"></img>
+                      </Link>
                     </div>
                     <div className="booking-block buffer">
                       <div className="booking-block-lt">
@@ -141,7 +177,9 @@ export const BookingCalendar = () => {
                           <h3>{counts.customBooking}</h3>
                         </div>
                       </div>
-                      <a href="#" aria-label="Add Buffer"><img src="src/assets/images/add-btn-2.svg" alt="Add"></img></a>
+                      <Link to="/booking" aria-label="Add Employees">
+                        <img src="src/assets/images/add-btn-2.svg" alt="Add"></img>
+                      </Link>
                     </div>
                   </div>
                 </div>

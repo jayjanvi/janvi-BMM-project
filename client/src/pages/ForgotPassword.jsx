@@ -7,11 +7,10 @@ export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [loading, setLoading] = useState(false); // State for spinner loading
+  const [loading, setLoading] = useState(false); 
 
   const handleChange = (e) => {
     setEmail(e.target.value);
-    // Clear error message when user starts typing
     setError('');
   };
   const handleSubmit = async (e) => {
@@ -19,30 +18,31 @@ export const ForgotPassword = () => {
   
     console.log('Submitting email:', email);
   
-    // Validate email format
+    
     if (!email.trim()) {
-      setError('Email is required');
+      toast.error('Email is required');
       return;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Email is invalid');
+      toast.error('Email is invalid');
       return;
     }
 
     try {
-      // Call the forgot password API
+      
       const body={
-        
-        email:email,
+         email:email,
       }
       setLoading(true);
       
       const response = await authService.forgotPassword(body);
       if (response.status === 200) {
-        
+        localStorage.setItem("user", JSON.stringify(response.data));
+        setTimeout(() => {
         toast.success('Password reset instructions sent to your email.');
-       
+        setLoading(false);
+          },2000);
       } else {
-        toast.error(response.data.message); // Display error message if API response indicates an error
+        toast.error(response.data.message); 
         setLoading(false);
       }
     } catch (error) {
@@ -75,12 +75,12 @@ export const ForgotPassword = () => {
                   placeholder="Enter Your Email"
                   autoFocus
                 />
-                {/* Display success icon if email is valid */}
+                
                 {error && <div className="icon-after icon-red"><i className="icon-error"></i></div>}
               </div>
-              {/* Display error message */}
+              
               {error && <div className="error-message">{error}</div>}
-              {/* Display success message */}
+           
               {successMessage && <div className="success-message">{successMessage}</div>}
             </div>
             <div className="form-group btn-container">

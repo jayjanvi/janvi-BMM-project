@@ -1,6 +1,5 @@
 const User = require("../models/user-model");
 const sendEmail = require("../utils/email/sendEmail");
-const bcrypt = require('bcrypt');
 
 // User Registration
 const addUserService = async (data) => {
@@ -25,49 +24,19 @@ const addUserService = async (data) => {
       "./template/createUserConfirm.handlebars"
     );
 
-    // Hash the password before saving to the database
-    const hash = await bcrypt.hash(password, Number(process.env.BCRYPT_SALT_ROUNDS));
-    const userCreated = await User.create({ ...data, password: hash });
+    const userCreated = await User.create({ ...data });
 
     return {
       msg: "Registration successful",
       username: username,
       userId: userCreated._id.toString(),
       token: await userCreated.generateToken(),
+      password: userCreated.password,
     };
   } catch (error) {
     throw new Error(error.message || error, 500);
   }
 };
-//   try {
-//     const { username, email } = data;
-
-//     const userExist = await User.findOne({ email });
-//     if (userExist) {
-//       throw new Error("Email already exist", 422);
-//     }
-//     const userCreated = await User.create(data);
-
-//     sendEmail(
-//       userCreated.email,
-//       "Registered in meal facility app",
-//       {
-//         name: userCreated.username,
-//         email: userCreated.email,
-//         password: userCreated.password,
-//       },
-//       "./template/createUserConfirm.handlebars"
-//     );
-//     return ({
-//       msg: "Registration successful",
-//       username: username,
-//       userId: userCreated._id.toString(),
-//       token: await userCreated.generateToken(),
-//     });
-//   } catch (error) {
-//     throw new Error(error, 500);
-//   }
-// };
 
 const getAllUsers = async () => {
   try {

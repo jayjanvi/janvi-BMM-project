@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '../../components/Navbar';
-import { AddBooking } from './AddBooking'; // Import the AddBooking component
+import { AddBooking } from './AddBooking';
 import { Footer } from '../../components/Footer';
 import { BookingList } from './BookingList';
 import { BookingListOthers } from './BookingListOthers';
@@ -19,12 +19,11 @@ export const BookingPage = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [bookingResponse, setBookingResponse] = useState(null);
   const handleClose = () => setIsOpenAddBooking(false);
-  const handleShow = () => setIsOpenAddBooking(true);
+  const showAddBooking = () => setIsOpenAddBooking(true);
 
   useEffect(() => {
-    // Fetch bookings list when the component mounts
     fetchBooking();
-  }, [showOthers, selectedMonth, selectedYear]);
+  }, [showOthers, selectedMonth, selectedYear, isOpenAddBooking]);
 
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -32,7 +31,6 @@ export const BookingPage = () => {
   };
 
   const downloadExcel = () => {
-    // Transform data into a format compatible with XLSX
     let formattedData = null;
     if (!showOthers) {
       formattedData = bookingResponse.data.map(item => ({
@@ -55,9 +53,9 @@ export const BookingPage = () => {
       }));
     }
 
-
     // Create a worksheet from the formatted data
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
     // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -96,15 +94,13 @@ export const BookingPage = () => {
   };
 
   const handleMonthChange = (e) => {
-    console.log(Number(e.target.value));
     setSelectedMonth(Number(e.target.value));
-    // fetchBooking();
   };
 
+
   const handleYearChange = (e) => {
-    // setSelectedMonth(e.target.value);
     setSelectedYear(e.target.value)
-    // fetchBooking();
+
   };
 
   return (
@@ -118,7 +114,7 @@ export const BookingPage = () => {
                 <h3 className="container-title">Booking List</h3>
               </div>
               <div className="container-right">
-                <button className="btn btn-primary" onClick={downloadExcel}>
+                <button className="btn btn-primary" onClick={showAddBooking}>
                   Add Booking</button>
               </div>
             </div>
@@ -132,11 +128,16 @@ export const BookingPage = () => {
           <a className={`content-tab_link ${showOthers ? "active" : ""}`} onClick={() => toggleShowOthers("others")} href="#">
             Others
           </a>
-          <TiExport size={18} onClick={downloadExcel} />
         </div>
         <div className="left-aligned-content">
-          <select value={selectedMonth} onChange={(e) => handleMonthChange(e)}>
 
+          <div className="tooltip-container">
+            <TiExport size={28} onClick={downloadExcel} />
+            <span className="tooltip-text">
+              Click to download the booking data as an Excel file
+            </span>
+          </div>
+          <select value={selectedMonth} onChange={(e) => handleMonthChange(e)}>
             <option value="">Select Month</option>
             <option value="0">January</option>
             <option value="1">February</option>
@@ -152,16 +153,13 @@ export const BookingPage = () => {
             <option value="11">December</option>
 
           </select>
-          <select value={selectedYear} onChange={(e) => handleYearChange}>
+          <select value={selectedYear} onChange={(e) => handleYearChange(e)}>
             <option value="">Select Year</option>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
             <option value="2024">2024</option>
             <option value="2025">2025</option>
             <option value="2026">2026</option>
 
           </select>
-          {/* <button className='btn-primary-filter' onClick={handleFilter}>Filter</button> */}
 
         </div>
         <ClipLoader margin={5} cssOverride={{ 'marginLeft': '50%', 'marginTop': '2%' }} loading={listLoader} />

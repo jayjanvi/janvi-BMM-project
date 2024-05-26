@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import AuthService from "../services/authService";
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
-const URL = "http://localhost:5000/api/auth/login";
-
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -13,8 +11,8 @@ export const Login = () => {
     password: "",
   });
 
-  const [loading, setLoading] = useState(false); // State for spinner loading
-  const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+  const [loading, setLoading] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleInput = (e) => {
     let name = e.target.name;
@@ -31,7 +29,7 @@ export const Login = () => {
   };
 
   const handleForgotPassword = () => {
-    // Redirect to the forgot password page
+    
     navigate("/forgotPassword");
   };
 
@@ -100,15 +98,14 @@ export const Login = () => {
                   name="password"
                   id="password-field"
                   className="form-control"
-                  // type="password"
-                  type={showPassword ? "text" : "password"} // Toggle password visibility
+                  type={showPassword ? "text" : "password"} 
                   required
                   placeholder="Password"
                   value={user.password}
                   onChange={handleInput}
                 />
                 <span
-                  onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
+                  onClick={togglePasswordVisibility}
                   className={`field-icon toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                 ></span>
               </div>

@@ -1,4 +1,5 @@
 const Booking = require("../models/booking-model");
+const DisableDates = require("../models/disableDate-model");
 const sendEmail = require("../utils/email/sendEmail");
 const { getUserById } = require("./user-service");
 
@@ -6,9 +7,7 @@ const formatDate = async (date) => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  return `${(day < 10 ? "0" : "") + day}-${
-    (month < 10 ? "0" : "") + month
-  }-${year}`;
+  return `${(day < 10 ? "0" : "") + day}-${(month < 10 ? "0" : "") + month}-${year}`;
 };
 
 // Create booking
@@ -56,11 +55,18 @@ const deleteBookingById = async (bookingId) => {
     if (!booking) {
       throw new Error("Booking not found");
     }
-
-    const result = await Booking.updateMany(
-      { employee: booking.employee },
-      { isDeleted: true }
-    );
+    let result = null;
+    if (booking.employee) {
+     result= await Booking.updateMany(
+        { employee: booking.employee },
+        { isDeleted: true }
+      );
+    } else {
+      result = await Booking.updateMany(
+        { _id: bookingId }, 
+        { isDeleted: true }
+      );
+    }
 
     if (result.nModified === 0) {
       throw new Error("No bookings found for this employee");
@@ -147,13 +153,16 @@ async function getBookingsDetailsForNonEmployee(bookings, date) {
     );
   });
 
-  
   for (const booking of filteredBookings) {
     let newBooking = {
+      id: booking._id,
       bookingCategory: booking.bookingCategory,
       notes: booking.notes,
       mealType: booking.mealType,
-      date: formatDateList(booking.startDate) +'-'+ formatDateList(booking.endDate),
+      date:
+        formatDateList(booking.startDate) +
+        "-" +
+        formatDateList(booking.endDate),
       totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
       mealDate: getBusinessDays(booking.startDate, booking.endDate),
     };
@@ -163,9 +172,9 @@ async function getBookingsDetailsForNonEmployee(bookings, date) {
 }
 
 function formatDateList(dateString) {
-  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-  return new Date(dateString).toLocaleDateString('en-GB', options);
-};
+  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  return new Date(dateString).toLocaleDateString("en-GB", options);
+}
 
 async function getBookingsDetailsForEmployee(bookings, date) {
   const bookingObjs = [];
@@ -177,6 +186,16 @@ async function getBookingsDetailsForEmployee(bookings, date) {
     const bookingYear = booking.startDate.getFullYear(); // Extract the year from the booking's startDate
     return (
       bookingMonth === parseInt(month, 10) && bookingYear === parseInt(year, 10)
+    );
+  });
+
+  const dates = await DisableDates.find();
+
+  const disableDates = dates.filter((date) => {
+    const dateMonth = date.startDate.getMonth(); // Extract the month from the booking's startDate
+    const dateYear = date.startDate.getFullYear(); // Extract the year from the booking's startDate
+    return (
+      dateMonth === parseInt(month, 10) && dateYear === parseInt(year, 10)
     );
   });
 
@@ -200,17 +219,21 @@ async function getBookingsDetailsForEmployee(bookings, date) {
       startDate: booking.startDate,
       endDate: booking.endDate,
       totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
-      mealDate: getBusinessDays(booking.startDate, booking.endDate),
+      mealDate: getBusinessDays(booking.startDate, booking.endDate,disableDates),
     };
 
-    const employeeIdWithType = booking.employee+newBooking.mealType;
+    const employeeIdWithType = booking.employee + newBooking.mealType;
 
     if (userBookingsMap.has(employeeIdWithType)) {
       const oldEmp = userBookingsMap.get(employeeIdWithType);
       const index = bookingObjs.findIndex((b) => b.empCode === oldEmp.empCode);
       if (index !== -1) {
         const mealDates = Array.from(
-          new Set( oldEmp.mealDate.concat( getBusinessDays(booking.startDate, booking.endDate)))
+          new Set(
+            oldEmp.mealDate.concat(
+              getBusinessDays(booking.startDate, booking.endDate)
+            )
+          )
         );
         const sortedMealDates = mealDates.sort((a, b) => a - b);
         if (bookingObjs[index].mealType === newBooking.mealType) {
@@ -219,7 +242,7 @@ async function getBookingsDetailsForEmployee(bookings, date) {
         }
       }
     } else {
-      userBookingsMap.set(booking.employee+newBooking.mealType, newBooking);
+      userBookingsMap.set(booking.employee + newBooking.mealType, newBooking);
       bookingObjs.push(newBooking);
     }
   }
@@ -264,17 +287,37 @@ function getBusinessDaysCount(startDate, endDate) {
   }
   return count;
 }
-function getBusinessDays(startDate, endDate) {
+function getBusinessDays(startDate, endDate, disableDates) {
   const dates = [];
   const current = new Date(startDate);
   const end = new Date(endDate);
-  while (current <= end) {
-    // Check if the current day is not a weekend (Saturday or Sunday)
-    if (current.getDay() !== 0 && current.getDay() !== 6) {
-      dates.push(current.getDate());
+  if (disableDates) {
+    while (current <= end) {
+      // Check if the current day is not a weekend (Saturday or Sunday)
+      if (current.getDay() !== 0 && current.getDay() !== 6) {
+        // Check if the current date is not in the disabled dates range
+        const isDisabled = disableDates.some(disabledRange => {
+          const disabledStart = new Date(disabledRange.startDate);
+          const disabledEnd = new Date(disabledRange.endDate);
+          return current >= disabledStart && current <= disabledEnd;
+        });
+  
+        if (!isDisabled) {
+          dates.push(current.getDate()); 
+        }
+      }
+      current.setDate(current.getDate() + 1);
     }
-    current.setDate(current.getDate() + 1);
-  }
+  } 
+  // else {
+  //   while (current <= end) {
+  //     // Check if the current day is not a weekend (Saturday or Sunday)
+  //     if (current.getDay() !== 0 && current.getDay() !== 6) {
+  //       dates.push(current.getDate());
+  //     }
+  //     current.setDate(current.getDate() + 1);
+  //   }
+  // }
   return dates;
 }
 

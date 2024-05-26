@@ -63,7 +63,7 @@ userSchema.pre("save", async function (next) {
     next();
   }
   try {
-    const saltRound = await bcrypt.genSalt(10);
+    const saltRound = await bcrypt.genSalt(Number(process.env.BCRYPT_SALT));
     const hash_password = await bcrypt.hash(user.password, saltRound);
     user.password = hash_password;
   } catch (error) {
@@ -107,7 +107,7 @@ userSchema.methods.generateToken = async function () {
       },
       process.env.JWT_SECRET_KEY,
       {
-        expiresIn: "30d",
+        expiresIn: "30m",
       }
     );
   } catch (error) {

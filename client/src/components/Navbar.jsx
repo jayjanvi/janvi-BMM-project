@@ -3,33 +3,31 @@ import React, { useState } from "react";
 import AuthService from "../services/authService";
 import { ChangePassword } from "../pages/ChangePassword";
 import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css"; // Importing css
-
+import { IoMdSettings } from "react-icons/io";
+import "react-confirm-alert/src/react-confirm-alert.css"; 
 export const Navbar = () => {
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState(null);
 
-  // Handle Change password modal
+
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  // Admin Drop down
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Function to toggle the dropdown
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
+  const [openDropdown, setOpenDropdown] = useState("");
+
+ 
+  const toggleDropdown = (dropdown) => {
+    setOpenDropdown(openDropdown === dropdown ? "" : dropdown);
   };
-  // Function to close the dropdown
-  const closeDropdown = () => {
-    setDropdownOpen(false);
-  };
+
   const handleOutsideClick = (event) => {
     if (!event.target.closest(".dropdown")) {
-      setDropdownOpen(false);
+      setOpenDropdown("");
     }
   };
+
   React.useEffect(() => {
     document.addEventListener("click", handleOutsideClick);
     return () => {
@@ -37,15 +35,14 @@ export const Navbar = () => {
     };
   }, []);
 
-  
   const handleItemClick = (itemName) => {
     setActiveItem(itemName);
   };
 
-  // const handleLogout = () => {
-  //   AuthService.logout();
-  //   navigate("/login");
-  // };
+  const handleDisableDateForm = () => {
+    navigate("/disableDate");
+  };
+
   const handleLogout = () => {
     confirmAlert({
       title: "Confirm Logout",
@@ -114,29 +111,30 @@ export const Navbar = () => {
               </ul>
               <div className="h-100 d-lg-inline-flex align-items-center">
                 <ul className="app-nav">
-                  {/* Notification Menu */}
-                  {/* <li className="dropdown">
-                    <a
-                      className="app-nav__item"
-                      href="#"
-                      data-toggle="dropdown"
-                      aria-label="Show settings" >
-                      <i className="icon-settings"></i>
-                    
-                    </a>
-                  </li> */}
 
-                  {/* User Menu */}
-                  <li className={`nav-item dropdown ${dropdownOpen ? "show" : ""  }`} >
+                  {/* Disable date setting */}
+                  <li className={`nav-item dropdown ${openDropdown === "settings" ? "show" : ""}`}>
                     <a className="app-nav__item dropdown-toggle"
                       href="#"
-                      onClick={toggleDropdown}
-                      aria-expanded={dropdownOpen ? "true" : "false"} >
+                      onClick={() => toggleDropdown("settings")}
+                      aria-expanded={openDropdown === "settings" ? "true" : "false"} >
+                      <IoMdSettings size={19} color="white" />
+                    </a>
+                    <ul className={`dropdown-menu settings-menu dropdown-menu-right ${openDropdown === "settings" ? "show" : ""}`}>
+                      <li><a onClick={handleDisableDateForm} className="dropdown-item">Disable Date</a></li>
+                    </ul>
+                  </li>
+
+                  {/* admin dropdown */}
+                  <li className={`nav-item dropdown ${openDropdown === "user" ? "show" : ""}`}>
+                    <a className="app-nav__item dropdown-toggle"
+                      href="#"
+                      onClick={() => toggleDropdown("user")}
+                      aria-expanded={openDropdown === "user" ? "true" : "false"} >
                       Admin
                     </a>
-                    <ul className={`dropdown-menu settings-menu dropdown-menu-right ${dropdownOpen ? "show" : "" }`}
-                      onClick={closeDropdown}>
-                      <li><a onClick={handleShow} className="dropdown-item" >Change Password</a></li>
+                    <ul className={`dropdown-menu settings-menu dropdown-menu-right ${openDropdown === "user" ? "show" : ""}`}>
+                      <li><a onClick={handleShow} className="dropdown-item">Change Password</a></li>
                       <li>
                         <a
                           className="dropdown-item"
@@ -153,7 +151,6 @@ export const Navbar = () => {
           </div>
         </div>
       </nav>
-      
     </>
   );
 };

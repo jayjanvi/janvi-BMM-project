@@ -12,7 +12,6 @@ export const BookingList = ({ BookingResponse }) => {
   const [bookings, setBookings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [BookingsPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
     if (BookingResponse) {
@@ -65,7 +64,7 @@ export const BookingList = ({ BookingResponse }) => {
               .then(response => {
                 toast.success("Booking deleted successfully");
                 setTimeout(() => {
-                  window.location.reload(); // Reloading the page to reflect changes
+                  window.location.reload();
                 }, 2000);
               })
               .catch(error => {
@@ -83,7 +82,6 @@ export const BookingList = ({ BookingResponse }) => {
   return (
     <>
       <div>
-
         <Table hover className="table-custom">
           <thead>
             <tr>
@@ -94,7 +92,7 @@ export const BookingList = ({ BookingResponse }) => {
                   <th>Department </th>
                   <th>Meal Type</th>
                   <th>Total Meals Booked </th>
-                  <th >Meal Dates</th>
+                  <th>Meal Dates</th>
                   <th>Actions</th>
                 </>
               )}

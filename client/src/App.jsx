@@ -8,6 +8,7 @@ import { UserFile } from "./pages/user/UserPage";
 import { BookingPage } from "./pages/booking/BookingPage";
 import { ResetPassword } from "./pages/ResetPassword";
 import { BookingCalendar } from "./pages/dashboard/bookingCalendar";
+import { DisableDateList } from "./pages/disableDate/DisableDateList";
 
 const App = () => {
 
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<PrivateRoute pageLoad="home" />} />
           <Route path="/user" element={<PrivateRoute pageLoad="user" />} />
+          <Route path="/disableDate" element={<DisableDateList/>} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/passwordReset" element={<ResetPassword />} />

@@ -15,7 +15,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
     isEmployee: "false",
     department: "",
   };
-  const [loading, setLoading] = useState(false); // State for spinner loading
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
 
   const [errors, setErrors] = useState({
@@ -27,7 +27,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
     department: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+  const [showPassword, setShowPassword] = useState(false); 
  
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,10 +39,8 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reloading
+    e.preventDefault(); 
     
-
-    // Perform validation
     let newErrors = {};
     
 
@@ -86,20 +84,17 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
 
     setErrors(newErrors);
 
-    // If there are no errors, create the user
     if (Object.keys(newErrors).length === 0) {
       setLoading(true); 
       try {
-      
         const response = await UserService.addUser(formData);
         if (response.status === 200) {
-          // await sendEmail(formData.email, formData.password);
           toast.success("User added successfully!");
           setTimeout(() => {
           handleClose();
           setFormData(initialFormData);
           window.location.reload();
-           setLoading(false);
+           setLoading(false); 2
           },2000);
         } else {
           toast.error("Sorry! User not created");
@@ -133,9 +128,9 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
   const handleModalClose = () => {
     handleClose();
     setFormData(initialFormData);
-    setLoading(false); // Reset form data after closing the modal
-  };
+    setLoading(false); 
 
+  }
 
   return (
     <>
@@ -196,7 +191,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
               <Form.Control
                 name="password"
                 className="form-control"
-                type={showPassword ? "text" : "password"} // Toggle password visibility
+                type={showPassword ? "text" : "password"} 
                 required
                 placeholder="Password"
                 value={formData.password}
@@ -204,7 +199,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
                 isInvalid={!!errors.password}
               />
               <span
-                onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
+                onClick={togglePasswordVisibility} 
                 className={`field-icon-passwordAddUser toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
               ></span>
               <Form.Control.Feedback type="invalid">
