@@ -6,34 +6,31 @@ const { getUserById } = require("./user-service");
 // add disable date
 const addDisableDates = async (data) => {
   try {
-    await DisableDates.create(data);
 
     const filteredBookings = await filterBookings(data.startDate, data.endDate);
 
     for (const booking of filteredBookings) {
-      let user = {};
-      try {
-        user = await getUserById(booking.employee);
-      } catch (error) {
-        throw new Error("User not found: " + booking.employee);
+      if (booking.employee) {
+        try {
+          let user = await getUserById(booking.employee);
+          // sendEmail(
+          //   user.email,
+          //   "Meal Book Cancelled from admin",
+          //   {
+          //     name: user.username,
+          //     bookingType: booking.mealType,
+          //     startDate: await formatDate(data.startDate),
+          //     endDate: await formatDate(data.endDate),
+          //   },
+          //   "./template/bookingConfirm.handlebars"
+          // );
+        } catch (error) {
+          throw new Error("User not found: " + booking.employee);
+        }
       }
-
-      // await Booking.updateMany({ _id: booking._id }, { isDeleted: true });
-
-      removeDaysFromBooking(booking,data.startDate,data.endDate);
-
-      sendEmail(
-        user.email,
-        "Meal Book Cancelled from admin",
-        {
-          name: user.username,
-          bookingType: booking.mealType,
-          // startDate: await formatDate(booking.startDate),
-          // endDate: await formatDate(booking.endDate),
-        },
-        "./template/bookingConfirm.handlebars"
-      );
+      removeDaysFromBooking(booking, data.startDate, data.endDate);
     }
+    await DisableDates.create(data);
 
     return "disable date created";
   } catch (error) {
@@ -45,36 +42,38 @@ const removeDaysFromBooking = async (booking, startDateStr, endDateStr) => {
   const startDate = new Date(startDateStr);
   const endDate = new Date(endDateStr);
 
-  const startDay = startDate.getUTCDate();
-  const endDay = endDate.getUTCDate();
+  const startDay = startDate.getDate();
+  const endDay = endDate.getDate();
 
   try {
-    // Find the booking by ID
-    // const booking = await Booking.findById(bookingId);
-
-    // if (!booking) {
-    //   throw new Error("Booking not found");
-    // }
 
     // Filter out the days that fall within the date range
     booking.days = booking.days.filter((day) => day < startDay || day > endDay);
 
-    // Save the updated booking
-    await booking.save();
+    if (booking.days.length === 0) {
+      // delete booking if there are no any days
+      await Booking.updateMany(
+        { _id: booking._id },
+        { isDeleted: true }
+      );
+    } else {
+      // Save the updated booking
+      await booking.save();
+    }
 
-    console.log("Updated booking:", booking);
+    return booking;
   } catch (error) {
-    console.error("Error updating booking:", error);
+    throw new Error(error, 500);
   }
 };
 
 const filterBookings = async (start, end) => {
-  const bookings = await Booking.find({ isDeleted: false, employee: { $ne: null } });
+  const bookings = await Booking.find({ isDeleted: false });
   const startDate = new Date(start);
   const endDate = new Date(end);
 
-  const startDay = startDate.getUTCDate();
-  const endDay = endDate.getUTCDate();
+  const startDay = startDate.getDate();
+  const endDay = endDate.getDate();
   const startMonth = startDate.toLocaleString("default", { month: "long" });
   const endMonth = endDate.toLocaleString("default", { month: "long" });
   const startYear = startDate.getUTCFullYear();

@@ -6,6 +6,7 @@ import bookingService from "../../services/bookingService";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import userService from "../../services/userService";
+import disableDateService from "../../services/disableDateService";
 
 export const AddBooking = ({ isOpen, handleClose }) => {
 
@@ -25,13 +26,14 @@ export const AddBooking = ({ isOpen, handleClose }) => {
   const [noteShow, setNoteShow] = useState(false);
   const [countShow, setCountShow] = useState(false);
 
+  const [disableDates, setDisableDates] = useState(null);
   const [userList, setUserList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
 
   const [bookingCategoryShow, setBookingCategory] = useState(false);
   const [employeeListShow, setEmployeeListShow] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     category: 'employees',
@@ -59,7 +61,15 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     // setBookingCategory(category === 'non_employees');
   };
 
+  useEffect(() => {
+    fetchDisableDate();
+  }, []);
 
+  const fetchDisableDate = async () => {
+    const response = await disableDateService.disableDateList();
+    console.log('res', response);
+    setDisableDates(response.data);
+  }
 
   useEffect(() => {
     updateFormVisibility();
@@ -70,7 +80,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     const { name, value, type, checked } = e.target;
     setFormData(prevState => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : value, 
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -87,7 +97,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
   };
 
   // fetch user list
-  const fetchUsers = async (value="") => {
+  const fetchUsers = async (value = "") => {
     try {
       const response = await userService.searchUsers({ value: value });
       setUserList(response.data);
@@ -112,18 +122,44 @@ export const AddBooking = ({ isOpen, handleClose }) => {
           setLoading(false);
         }, 2000);
         toast.success("Booking added successfully");
-      
+
       })
       .catch(error => {
         toast.error("Failed to add booking");
         setLoading(false);
       });
-      setFormData(initialFormData);
+    setFormData(initialFormData);
   };
 
-  const isWeekday = (date) => {
+  const isWeekdayWithHolidays = (date) => {
+    console.log('disableDates', disableDates);
     const day = date.getDay();
-    return day !== 0 && day !== 6; // Sunday = 0, Saturday = 6
+    // Check if the date falls on a weekend (Saturday or Sunday)
+    if (day === 0 || day === 6) {
+      return false; // Disable weekends
+    }
+    return isHoliday(date);
+  };
+
+  const isHoliday = date => {
+    // Iterate over each holiday period
+    for (const holiday of disableDates) {
+      // Extract month, year, start date, and end date from the holiday period
+      const [start, end] = holiday.date.split('-');
+      const [startDay, startMonth, startYear] = start.split('/');
+      const [endDay, endMonth, endYear] = end.split('/');
+
+      // Check if the date falls within the holiday period
+      if (
+        date.getMonth() === parseInt(startMonth, 10) - 1 && // Month is 0-indexed
+        date.getFullYear() === parseInt(startYear, 10) &&
+        date.getDate() >= parseInt(startDay, 10) &&
+        date.getDate() <= parseInt(endDay, 10)
+      ) {
+        return false; // Disable the date if it falls within a holiday period
+      }
+    }
+    return true; // Enable the date by default
   };
 
   return (
@@ -193,12 +229,12 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                     selectsRange
                     dateFormat="dd-MM-yyyy"
                     minDate={new Date()}
-                    filterDate={isWeekday}
+                    filterDate={isWeekdayWithHolidays}
                     placeholderText="Select Date Range"
                     className="form-control border-right-0 datepicker-icn" />
 
                   <div className="input-group-append bg-transparent">
-   
+
                   </div>
                 </div>
               </div>
@@ -253,8 +289,8 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                                 <input
                                   className="checkbox__input"
                                   type="checkbox"
-                                  name={`employee-${user._id}`} 
-                                  checked={formData.employee.includes(user._id)} 
+                                  name={`employee-${user._id}`}
+                                  checked={formData.employee.includes(user._id)}
                                   onChange={(e) => handleCheckboxChange(e, user)}
                                 />
                                 <span className="checkbox__checkmark"></span>

@@ -19,68 +19,212 @@ const createBooking = async (data) => {
     // Extract days, month, and year from startDate and endDate
     const startDate = new Date(data.startDate);
     const endDate = new Date(data.endDate);
-    const days = getBusinessDays(startDate, endDate);
-    const month = startDate.toLocaleString("default", { month: "long" });
-    const year = startDate.getFullYear();
 
-    if (data.employee.length !== 0) {
-      for (const employeeId of data.employee) {
-        // Check if the employee already has a booking with the same meal type
-        let existingBooking = await Booking.findOne({
-          employee: employeeId,
-          mealType: data.mealType,
+    const startMonth = startDate.getMonth();
+    const endMonth = endDate.getMonth();
+    const startYear = startDate.getFullYear();
+    const endYear = endDate.getFullYear();
+
+    // If start date and end date are in the same month and year
+    if (startMonth === endMonth && startYear === endYear) {
+      const days = getBusinessDays(startDate, endDate);
+      const month = startDate.toLocaleString("default", { month: "long" });
+      const year = startDate.getFullYear();
+
+      if (data.employee.length !== 0) {
+        for (const employeeId of data.employee) {
+          // Check if the employee already has a booking with the same meal type
+          let existingBooking = await Booking.findOne({
+            employee: employeeId,
+            mealType: data.mealType,
+            month: month,
+            year: year,
+            isDeleted: false
+          });
+
+          if (existingBooking) {
+            // Update the existing booking
+            const combinedDays = Array.from(new Set([...existingBooking.days, ...days]));
+            combinedDays.sort((a, b) => a - b);
+            existingBooking.days = combinedDays;
+            existingBooking.bookingCount = combinedDays.length;
+            await existingBooking.save();
+          } else {
+            // Create a new booking
+            const bookingData = {
+              ...data,
+              days: days,
+              month: month,
+              year: year,
+              employee: employeeId,
+            };
+
+            const booking = await Booking.create(bookingData);
+            bookings.push(booking);
+
+            // Send an email to the user if needed
+            const user = await getUserById(booking.employee);
+            // Send confirmed email to employee
+            sendEmail(
+              user.email,
+              "Lunch Meal Booking Confirmation",
+              {
+                name: user.name,
+                bookingType: booking.mealType,
+                startDate: await formatDate(data.startDate),
+                endDate: await formatDate(data.endDate),
+              },
+              "./template/bookingConfirm.handlebars"
+            );
+          }
+        }
+      } else {
+        // Create booking for non-employees
+        const bookingData = {
+          ...data,
+          days: days,
           month: month,
           year: year,
-          isDeleted: false
-        });
+          employee: null,
+        };
+        const booking = await Booking.create(bookingData);
+        return booking;
+      }
+    } else { // If start date and end date are in different months
+      let currentDate = new Date(startDate);
+      while (currentDate.getMonth() !== endDate.getMonth() || currentDate.getFullYear() !== endDate.getFullYear()) {
+        const currentMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        const bookingEndDate = currentDate.getDate() < currentMonthEndDate.getDate() ? currentDate : currentMonthEndDate;
 
-        if (existingBooking) {
-          // Update the existing booking
-          const combinedDays = Array.from(new Set([...existingBooking.days, ...days]));
-          combinedDays.sort((a, b) => a - b);
-          existingBooking.days = combinedDays;
-          existingBooking.bookingCount = combinedDays.length;
-          await existingBooking.save();
-        } else {
-          // Create a new booking
+        const days = getBusinessDays(currentDate, bookingEndDate);
+        const month = currentDate.toLocaleString("default", { month: "long" });
+        const year = currentDate.getFullYear();
+
+        // Process bookings for employees
+        if (data.employee.length !== 0) {
+          for (const employeeId of data.employee) {
+            // Check if the employee already has a booking with the same meal type
+            let existingBooking = await Booking.findOne({
+              employee: employeeId,
+              mealType: data.mealType,
+              month: month,
+              year: year,
+              isDeleted: false
+            });
+
+            if (existingBooking) {
+              // Update the existing booking
+              const combinedDays = Array.from(new Set([...existingBooking.days, ...days]));
+              combinedDays.sort((a, b) => a - b);
+              existingBooking.days = combinedDays;
+              existingBooking.bookingCount = combinedDays.length;
+              await existingBooking.save();
+            } else {
+              // Create a new booking
+              const bookingData = {
+                ...data,
+                days: days,
+                month: month,
+                year: year,
+                employee: employeeId,
+              };
+
+              const booking = await Booking.create(bookingData);
+              bookings.push(booking);
+
+              // Send an email to the user if needed
+              const user = await getUserById(booking.employee);
+              // Send confirmed email to employee
+              sendEmail(
+                user.email,
+                "Lunch Meal Booking Confirmation",
+                {
+                  name: user.name,
+                  bookingType: booking.mealType,
+                  startDate: await formatDate(currentDate),
+                  endDate: await formatDate(bookingEndDate),
+                },
+                "./template/bookingConfirm.handlebars"
+              );
+            }
+          }
+        } else { // Process bookings for non-employees
           const bookingData = {
             ...data,
             days: days,
             month: month,
             year: year,
-            employee: employeeId,
+            employee: null,
           };
-
           const booking = await Booking.create(bookingData);
           bookings.push(booking);
-
-          // Send an email to the user if needed
-          const user = await getUserById(booking.employee);
-          // Send confirmed email to employee
-          sendEmail(
-            user.email,
-            "Lunch Meal Booking Confirmation",
-            {
-              name: user.name,
-              bookingType: booking.mealType,
-              startDate: await formatDate(data.startDate),
-              endDate: await formatDate(data.endDate),
-            },
-            "./template/bookingConfirm.handlebars"
-          );
         }
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
       }
-    } else {
-      // Create booking for non-employees
-      const bookingData = {
-        ...data,
-        days: days,
-        month: month,
-        year: year,
-        employee: null,
-      };
-      const booking = await Booking.create(bookingData);
-      return booking;
+      // Process the last month
+      const days = getBusinessDays(currentDate, endDate);
+      const month = currentDate.toLocaleString("default", { month: "long" });
+      const year = currentDate.getFullYear();
+
+      // Process bookings for employees
+      if (data.employee.length !== 0) {
+        for (const employeeId of data.employee) {
+          // Check if the employee already has a booking with the same meal type
+          let existingBooking = await Booking.findOne({
+            employee: employeeId,
+            mealType: data.mealType,
+            month: month,
+            year: year,
+            isDeleted: false
+          });
+
+          if (existingBooking) {
+            // Update the existing booking
+            const combinedDays = Array.from(new Set([...existingBooking.days, ...days]));
+            combinedDays.sort((a, b) => a - b);
+            existingBooking.days = combinedDays;
+            existingBooking.bookingCount = combinedDays.length;
+            await existingBooking.save();
+          } else {
+            // Create a new booking
+            const bookingData = {
+              ...data,
+              days: days,
+              month: month,
+              year: year,
+              employee: employeeId,
+            };
+
+            const booking = await Booking.create(bookingData);
+            bookings.push(booking);
+
+            // Send an email to the user if needed
+            const user = await getUserById(booking.employee);
+            // Send confirmed email to employee
+            sendEmail(
+              user.email,
+              "Lunch Meal Booking Confirmation",
+              {
+                name: user.name,
+                bookingType: booking.mealType,
+                startDate: await formatDate(currentDate),
+                endDate: await formatDate(endDate),
+              },
+              "./template/bookingConfirm.handlebars"
+            );
+          }
+        }
+      } else { // Process bookings for non-employees
+        const bookingData = {
+          ...data,
+          days: days,
+          month: month,
+          year: year,
+          employee: null,
+        };
+        const booking = await Booking.create(bookingData);
+        bookings.push(booking);
+      }
     }
     return bookings;
   } catch (error) {
@@ -186,7 +330,7 @@ async function getBookingsDetailsForNonEmployee(bookings, date) {
   const year = date.split("-")[1];
 
   const filteredBookings = bookings.filter((booking) => {
-    return ( booking.month === month && booking.year === Number(year) );
+    return (booking.month === month && booking.year === Number(year));
   });
 
   // for (const booking of filteredBookings) {
@@ -218,7 +362,7 @@ async function getBookingsDetailsForEmployee(bookings, date) {
   const year = date.split("-")[1];
 
   const filteredBookings = bookings.filter((booking) => {
-    return ( booking.month === month && booking.year === Number(year) );
+    return (booking.month === month && booking.year === Number(year));
   });
 
   // const dates = await DisableDates.find();
@@ -272,8 +416,8 @@ async function getBookingsDetailsForEmployee(bookings, date) {
     //     }
     //   }
     // } else {
-      userBookingsMap.set(booking.employee + newBooking.mealType, newBooking);
-      bookingObjs.push(newBooking);
+    userBookingsMap.set(booking.employee + newBooking.mealType, newBooking);
+    bookingObjs.push(newBooking);
     // }
   }
 
@@ -286,7 +430,7 @@ async function getBookingsByDate(date) {
     const year = date.split("-")[1]; // Extract the year from the provided date
     const bookings = await Booking.find({ isDeleted: false });
     const filteredBookings = bookings.filter((booking) => {
-      return ( booking.month === month && booking.year === Number(year) );
+      return (booking.month === month && booking.year === Number(year));
     });
     return filteredBookings;
   } catch (error) {
@@ -332,34 +476,34 @@ const getBusinessDays = (startDate, endDate) => {
 //   const dates = [];
 //   const current = new Date(startDate);
 //   const end = new Date(endDate);
-  // if (disableDates) {
-  //   while (current <= end) {
-  //     // Check if the current day is not a weekend (Saturday or Sunday)
-  //     if (current.getDay() !== 0 && current.getDay() !== 6) {
-  //       // Check if the current date is not in the disabled dates range
-  //       const isDisabled = disableDates.some((disabledRange) => {
-  //         const disabledStart = new Date(disabledRange.startDate);
-  //         const disabledEnd = new Date(disabledRange.endDate);
-  //         return current >= disabledStart && current <= disabledEnd;
-  //       });
+// if (disableDates) {
+//   while (current <= end) {
+//     // Check if the current day is not a weekend (Saturday or Sunday)
+//     if (current.getDay() !== 0 && current.getDay() !== 6) {
+//       // Check if the current date is not in the disabled dates range
+//       const isDisabled = disableDates.some((disabledRange) => {
+//         const disabledStart = new Date(disabledRange.startDate);
+//         const disabledEnd = new Date(disabledRange.endDate);
+//         return current >= disabledStart && current <= disabledEnd;
+//       });
 
-  //       if (!isDisabled) {
-  //         dates.push(current.getDate());
-  //       }
-  //     }
-  //     current.setDate(current.getDate() + 1);
-  //   }
-  // }
-  // else {
-  //   while (current <= end) {
-  //     // Check if the current day is not a weekend (Saturday or Sunday)
-  //     if (current.getDay() !== 0 && current.getDay() !== 6) {
-  //       dates.push(current.getDate());
-  //     }
-  //     current.setDate(current.getDate() + 1);
-  //   }
-  // }
-  // return dates;
+//       if (!isDisabled) {
+//         dates.push(current.getDate());
+//       }
+//     }
+//     current.setDate(current.getDate() + 1);
+//   }
+// }
+// else {
+//   while (current <= end) {
+//     // Check if the current day is not a weekend (Saturday or Sunday)
+//     if (current.getDay() !== 0 && current.getDay() !== 6) {
+//       dates.push(current.getDate());
+//     }
+//     current.setDate(current.getDate() + 1);
+//   }
+// }
+// return dates;
 // }
 
 // Get booking by ID

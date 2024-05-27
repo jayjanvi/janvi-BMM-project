@@ -15,6 +15,11 @@ export const BookingCalendar = () => {
     "November", "December"
   ];
 
+  const mealTypeColors = {
+    "Lunch": "#ae49cc",
+    "Dinner": "#ea855b"
+  };
+
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedDate, setSelectedDate] = useState(months[new Date().getMonth()] + '-' + new Date().getFullYear());
   const [bookings, setBookings] = useState(null);
@@ -26,8 +31,8 @@ export const BookingCalendar = () => {
   };
 
   const handleNavigate = async (date) => {
-    setSelectedDate(new Date(date).getMonth() + '-' + new Date(date).getFullYear());
-    fetchBooking({ date: new Date(date).getMonth() + '-' + new Date(date).getFullYear() });
+    setSelectedDate(months[new Date(date).getMonth()] + '-' + new Date(date).getFullYear());
+    fetchBooking({ date: months[new Date(date).getMonth()] + '-' + new Date(date).getFullYear() });
   };
 
   const getDateInFormat = (date) => {
@@ -45,46 +50,47 @@ export const BookingCalendar = () => {
   }, [bookings]);
 
   useEffect(() => {
-    bookings && setCounts(getCount(bookings, selectedDay));
+    bookings && setCounts(getCount(bookings));
   }, [selectedDay, bookings]);
 
   const getCount = (bookings) => {
-
-    // const filteredBookings = bookings.filter(booking => {
-    //   // Convert booking start and end dates to Date objects
-    //   const startDate = new Date(booking.startDate);
-    //   const endDate = new Date(booking.endDate);
-
-    //   // Normalize the dates to only include the date part (ignore the time)
-    //   const selectedDate = new Date(selectedDay.toISOString().split('T')[0]);
-    //   const startDateOnly = new Date(startDate.toISOString().split('T')[0]);
-    //   const endDateOnly = new Date(endDate.toISOString().split('T')[0]);
-
-    //   // Filter the bookings based on the normalized date
-    //   return selectedDate >= startDateOnly && selectedDate <= endDateOnly;
-    // });
-    // const employeeCount = filteredBookings.filter(booking => booking.category === 'employees').length;
-    // console.log('emp', filteredBookings.filter(booking => booking.category === 'employees'));
-    // const nonEmployeeCount = filteredBookings.filter(booking => booking.category === 'non_employees').length;
-    // console.log('non-emp', filteredBookings.filter(booking => booking.category === 'non_employees'));
-    // const customBookingCount = filteredBookings.filter(booking => booking.category === 'custom_booking').length;
-    // console.log('custom', filteredBookings.filter(booking => booking.category === 'custom_booking'));
-    return { employee: "", nonemployee: "", customBooking: "" };
+    const selectedDay1 = new Date(selectedDay).getDate();
+    const bookingsForSelectedDay = bookings.filter(booking => booking.days.includes(selectedDay1));
+    return bookingsForSelectedDay.reduce((count, booking) => {
+      if (booking.category === 'employees') {
+        count.employee += 1;
+      } else if (booking.category === 'non_employees') {
+        count.nonemployee += 1;
+      } else if (booking.category === 'custom_booking') {
+        count.customBooking += 1;
+      }
+      if (booking.mealType === 'Lunch') {
+        count.lunch += 1;
+      } else if (booking.mealType === 'Dinner') {
+        count.dinner += 1;
+      }
+      return count;
+    }, { employee: 0, nonemployee: 0, customBooking: 0, lunch: 0, dinner: 0 });
   }
 
   const createEventsFromBookings = (bookings) => {
-
-    return bookings.map((booking, index) => {
-      const startDate = moment(booking.startDate).utc().toDate();
-      const endDate = moment(booking.endDate).endOf('day').utc().toDate();
-
-      return {
-        id: index,
-        title: booking.mealType,
-        start: startDate,
-        end: endDate,
-      };
+    // Initialize events array
+    const events = [];
+    bookings.forEach((booking, index) => {
+      // Iterate over days in the booking
+      booking.days.forEach(day => {
+        // Create event object
+        const event = {
+          id: index,
+          title: booking.mealType,
+          start: new Date(booking.year, months.indexOf(booking.month), day), // Assuming current month
+          end: new Date(booking.year, months.indexOf(booking.month), day + 1), // Assuming events are for a single day
+          color: mealTypeColors[booking.mealType] // Set color based on meal type
+        };
+        events.push(event);
+      });
     });
+    return events;
   };
 
   const fetchBooking = async (date) => {
@@ -97,6 +103,15 @@ export const BookingCalendar = () => {
       return { style: { backgroundColor: 'lightblue', }, };
     }
     return {};
+  };
+
+  const eventStyleGetter = (event) => {
+    let backgroundColor = event.color;
+    return {
+      style: {
+        backgroundColor
+      }
+    };
   };
 
   return (
@@ -121,41 +136,28 @@ export const BookingCalendar = () => {
                     onNavigate={handleNavigate}
                     onSelectSlot={handleSelectSlot}
                     dayPropGetter={customSlotPropGetter}
-
-                    eventPropGetter={(eventPropGetter) => {
-                    const backgroundColor = event.colorEvento || '#3174ad'; // Default color
-                    const color = event.color || '#fff'; // Default text color
-                    return {style: {backgroundColor, color} };
-                    }}
-
-                  //   const backgroundColor = myEventsList.colorEvento ? myEventsList.colorEvento : '#70f45e';
-                  //   const color = myEventsList.color ? myEventsList.color : 'white';
-                  //   return {style: {backgroundColor, color} }
-                  // }}
+                    eventPropGetter={eventStyleGetter}
                   />
                 </div>
-
               </div>
               <div className="col-lg-3">
                 <div className="tile">
                   <h3 className="tile-title">{selectedDay && getDateInFormat(selectedDay)}</h3>
                   <div className="booking-wrapper">
                     <div style={{ display: 'flex', }}>
-                      <div style={{ display: 'flex', }}>
-                        <div className="booking-block" style={{ width: '150px', marginRight: '10px', backgroundColor: "#70f45e" }}>
-                          <h5>Lunch</h5>
-                        </div>
-                        <div className="booking-block" style={{ width: '150px', backgroundColor: "#ff9e02" }}>
-                          <h5>Dinner</h5>
-                        </div>
+                      <div className="booking-block" style={{ width: '50%', marginRight: '10px', backgroundColor: mealTypeColors["Lunch"] }}>
+                        <h5 style={{ color: 'white' }}>Lunch: {counts.lunch}</h5>
+                      </div>
+                      <div className="booking-block" style={{ width: '50%', backgroundColor: mealTypeColors["Dinner"] }}>
+                        <h5 style={{ color: 'white' }}>Dinner: {counts.dinner}</h5>
                       </div>
                     </div>
-                    <div className="booking-block">
+                    {/* <div className="booking-block">
                       <h5>Bookings</h5>
                       <Link to="/booking" aria-label="Add Employees">
                         <img src="src/assets/images/add-btn-1.svg" alt="Add"></img>
                       </Link>
-                    </div>
+                    </div> */}
                     <div className="booking-block employees">
                       <div className="booking-block-lt">
                         <div className="icon-block"><i className="icon-employees"></i></div>
