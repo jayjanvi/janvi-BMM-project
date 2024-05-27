@@ -9,9 +9,14 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 const localizer = momentLocalizer(moment)
 
 export const BookingCalendar = () => {
+  const months = [
+    "January", "February", "March", "April", "May",
+    "June", "July", "August", "September", "October",
+    "November", "December"
+  ];
 
   const [selectedDay, setSelectedDay] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date().getMonth() + '-' + new Date().getFullYear());
+  const [selectedDate, setSelectedDate] = useState(months[new Date().getMonth()] + '-' + new Date().getFullYear());
   const [bookings, setBookings] = useState(null);
   const [events, setEvents] = useState([]);
   const [counts, setCounts] = useState({ employee: 0, nonemployee: 0, customBooking: 0 });
@@ -45,26 +50,26 @@ export const BookingCalendar = () => {
 
   const getCount = (bookings) => {
 
-    const filteredBookings = bookings.filter(booking => {
-      // Convert booking start and end dates to Date objects
-      const startDate = new Date(booking.startDate);
-      const endDate = new Date(booking.endDate);
+    // const filteredBookings = bookings.filter(booking => {
+    //   // Convert booking start and end dates to Date objects
+    //   const startDate = new Date(booking.startDate);
+    //   const endDate = new Date(booking.endDate);
 
-      // Normalize the dates to only include the date part (ignore the time)
-      const selectedDate = new Date(selectedDay.toISOString().split('T')[0]);
-      const startDateOnly = new Date(startDate.toISOString().split('T')[0]);
-      const endDateOnly = new Date(endDate.toISOString().split('T')[0]);
+    //   // Normalize the dates to only include the date part (ignore the time)
+    //   const selectedDate = new Date(selectedDay.toISOString().split('T')[0]);
+    //   const startDateOnly = new Date(startDate.toISOString().split('T')[0]);
+    //   const endDateOnly = new Date(endDate.toISOString().split('T')[0]);
 
-      // Filter the bookings based on the normalized date
-      return selectedDate >= startDateOnly && selectedDate <= endDateOnly;
-    });
-    const employeeCount = filteredBookings.filter(booking => booking.category === 'employees').length;
-    console.log('emp', filteredBookings.filter(booking => booking.category === 'employees'));
-    const nonEmployeeCount = filteredBookings.filter(booking => booking.category === 'non_employees').length;
-    console.log('non-emp', filteredBookings.filter(booking => booking.category === 'non_employees'));
-    const customBookingCount = filteredBookings.filter(booking => booking.category === 'custom_booking').length;
-    console.log('custom', filteredBookings.filter(booking => booking.category === 'custom_booking'));
-    return { employee: employeeCount, nonemployee: nonEmployeeCount, customBooking: customBookingCount };
+    //   // Filter the bookings based on the normalized date
+    //   return selectedDate >= startDateOnly && selectedDate <= endDateOnly;
+    // });
+    // const employeeCount = filteredBookings.filter(booking => booking.category === 'employees').length;
+    // console.log('emp', filteredBookings.filter(booking => booking.category === 'employees'));
+    // const nonEmployeeCount = filteredBookings.filter(booking => booking.category === 'non_employees').length;
+    // console.log('non-emp', filteredBookings.filter(booking => booking.category === 'non_employees'));
+    // const customBookingCount = filteredBookings.filter(booking => booking.category === 'custom_booking').length;
+    // console.log('custom', filteredBookings.filter(booking => booking.category === 'custom_booking'));
+    return { employee: "", nonemployee: "", customBooking: "" };
   }
 
   const createEventsFromBookings = (bookings) => {
@@ -116,10 +121,16 @@ export const BookingCalendar = () => {
                     onNavigate={handleNavigate}
                     onSelectSlot={handleSelectSlot}
                     dayPropGetter={customSlotPropGetter}
-                  // eventPropGetter={(myEventsList) => {
+
+                    eventPropGetter={(eventPropGetter) => {
+                    const backgroundColor = event.colorEvento || '#3174ad'; // Default color
+                    const color = event.color || '#fff'; // Default text color
+                    return {style: {backgroundColor, color} };
+                    }}
+
                   //   const backgroundColor = myEventsList.colorEvento ? myEventsList.colorEvento : '#70f45e';
                   //   const color = myEventsList.color ? myEventsList.color : 'white';
-                  //   return { style: { backgroundColor ,color} }
+                  //   return {style: {backgroundColor, color} }
                   // }}
                   />
                 </div>
@@ -173,7 +184,7 @@ export const BookingCalendar = () => {
                       <div className="booking-block-lt">
                         <div className="icon-block"><i className="icon-buffer"></i></div>
                         <div className="info-block">
-                          <h5>Buffer</h5>
+                          <h5>Custome Booking</h5>
                           <h3>{counts.customBooking}</h3>
                         </div>
                       </div>

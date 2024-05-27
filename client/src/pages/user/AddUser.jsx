@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -6,7 +6,7 @@ import { ClipLoader } from 'react-spinners';
 import UserService from "../../services/userService";
 import { ToastContainer, toast } from 'react-toastify';
 
-export const AddUser = ({ show, handleClose, onAddUser }) => {
+export const AddUser = ({ show, handleClose, onAddUser, handleRefresh }) => {
   const initialFormData = {
     username: "",
     email: "",
@@ -27,8 +27,8 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
     department: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false); 
- 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -39,10 +39,10 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
-    
+    e.preventDefault();
+
     let newErrors = {};
-    
+
 
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
@@ -85,22 +85,20 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setLoading(true); 
+      setLoading(true);
       try {
         const response = await UserService.addUser(formData);
         if (response.status === 200) {
           toast.success("User added successfully!");
-          setTimeout(() => {
+          handleRefresh(response);
           handleClose();
           setFormData(initialFormData);
-          window.location.reload();
-           setLoading(false); 2
-          },2000);
+          setLoading(false);
         } else {
           toast.error("Sorry! User not created");
           setLoading(false);
         }
-       
+
       } catch (error) {
         if (error.response) {
           toast.error(error.response.data.message);
@@ -128,7 +126,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
   const handleModalClose = () => {
     handleClose();
     setFormData(initialFormData);
-    setLoading(false); 
+    setLoading(false);
 
   }
 
@@ -191,7 +189,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
               <Form.Control
                 name="password"
                 className="form-control"
-                type={showPassword ? "text" : "password"} 
+                type={showPassword ? "text" : "password"}
                 required
                 placeholder="Password"
                 value={formData.password}
@@ -199,7 +197,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
                 isInvalid={!!errors.password}
               />
               <span
-                onClick={togglePasswordVisibility} 
+                onClick={togglePasswordVisibility}
                 className={`field-icon-passwordAddUser toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
               ></span>
               <Form.Control.Feedback type="invalid">
@@ -251,7 +249,7 @@ export const AddUser = ({ show, handleClose, onAddUser }) => {
             Close
           </Button>
           <Button variant="primary" onClick={handleSubmit}>
-          {loading ? (
+            {loading ? (
               <ClipLoader color={'#ffffff'} loading={loading} size={25} />
             ) : (
               "Add"

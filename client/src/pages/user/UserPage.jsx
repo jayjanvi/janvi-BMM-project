@@ -5,13 +5,14 @@ import { UserList } from "./userList";
 import { Footer } from "../../components/Footer";
 import { AddUser } from "./AddUser";
 import userService from "../../services/userService";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { ClipLoader } from 'react-spinners';
 
 export const UserFile = () => {
-    useEffect(() => {
+  const [handleRefresh, setHandleRefresh] = useState(false);
+  useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [handleRefresh]);
     const [show, setShow] = useState(false);
     const [userResponse, setUserResponse] = useState(null);
     const [listLoader, setListLoader] = useState(false);
@@ -70,9 +71,8 @@ export const UserFile = () => {
             <ClipLoader margin={5} cssOverride={{'marginLeft':'50%','marginTop':'2%' }} loading={listLoader} />
       
             {userResponse && <UserList userResponse={userResponse} />}
-            <AddUser key={show.toString()} show={show} handleClose={handleClose} onAddUser={addUser} />
+            <AddUser key={show.toString()} show={show} handleClose={handleClose} onAddUser={addUser} handleRefresh={setHandleRefresh} />
             <Footer />
-            <ToastContainer />
         </>
     );
 }

@@ -14,13 +14,18 @@ const bookingSchema = new Schema({
     required: true,
     trim: true,
   },
-  startDate: {
-    type: Date,
+  days: {
+    type: [Number],
     required: true,
     trim: true,
   },
-  endDate: {
-    type: Date,
+  month: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  year: {
+    type: Number,
     required: true,
     trim: true,
   },

@@ -69,7 +69,7 @@ export const DisableDateList = () => {
                     </tr>
                 </thead>
                   <tbody>
-              {currentDisableDates.map((disableDate, index) => (
+              {currentDisableDates && currentDisableDates.map((disableDate, index) => (
                 <tr key={disableDate._id}>
                   <td>{index + 1 + indexOfFirstDisableDate}</td>
                   <td>{disableDate.date}</td>

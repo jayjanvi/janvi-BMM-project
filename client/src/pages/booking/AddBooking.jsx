@@ -59,6 +59,8 @@ export const AddBooking = ({ isOpen, handleClose }) => {
     // setBookingCategory(category === 'non_employees');
   };
 
+
+
   useEffect(() => {
     updateFormVisibility();
     fetchUsers();
@@ -85,7 +87,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
   };
 
   // fetch user list
-  const fetchUsers = async (value) => {
+  const fetchUsers = async (value="") => {
     try {
       const response = await userService.searchUsers({ value: value });
       setUserList(response.data);
@@ -196,7 +198,8 @@ export const AddBooking = ({ isOpen, handleClose }) => {
                     className="form-control border-right-0 datepicker-icn" />
 
                   <div className="input-group-append bg-transparent">
-                     </div>
+   
+                  </div>
                 </div>
               </div>
               {bookingCategoryShow && <div className="form-group">

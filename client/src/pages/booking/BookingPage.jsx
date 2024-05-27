@@ -12,25 +12,28 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 
 export const BookingPage = () => {
+  const months = [
+    "January", "February", "March", "April", "May",
+    "June", "July", "August", "September", "October",
+    "November", "December"
+  ];
+
   const [isOpenAddBooking, setIsOpenAddBooking] = useState(false);
   const [showOthers, setShowOthers] = useState(false);
   const [listLoader, setListLoader] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedMonth, setSelectedMonth] = useState(months[new Date().getMonth()]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [bookingResponse, setBookingResponse] = useState(null);
   const handleClose = () => setIsOpenAddBooking(false);
   const showAddBooking = () => setIsOpenAddBooking(true);
+  const [handleRefresh, setHandleRefresh] = useState(false);
 
   useEffect(() => {
     fetchBooking();
-  }, [showOthers, selectedMonth, selectedYear, isOpenAddBooking]);
-
-  const formatDate = (dateString) => {
-    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-GB', options);
-  };
+  }, [showOthers, selectedMonth, selectedYear, isOpenAddBooking,handleRefresh]);
 
   const downloadExcel = () => {
+    setListLoader(true);
     let formattedData = null;
     if (!showOthers) {
       formattedData = bookingResponse.data.map(item => ({
@@ -39,16 +42,14 @@ export const BookingPage = () => {
         "Employee Name": item.empName,
         "Department": item.department,
         "Meal Type": item.mealType,
-        "Start Date": formatDate(item.startDate),
-        "End Date": formatDate(item.endDate),
         "Total Meals": item.totalMeals,
         "Meal Dates": item.mealDate.join(', ')
       }));
     } else {
       formattedData = bookingResponse.data.map(item => ({
         "Booking Category": item.bookingCategory,
-        "Date": item.date,
-        "Counts": item.mealDate.join(', '),
+        "Date": item.days.join(', '),
+        "Counts": item.days.length,
         "Notes": item.notes,
       }));
     }
@@ -66,7 +67,9 @@ export const BookingPage = () => {
 
     // Save the blob as an Excel file
     saveAs(blob, 'Bookings.xlsx');
-    toast.success("Booking Data Downloaded Successfully")
+    toast.success("Booking Data Downloaded Successfully");
+    setListLoader(false);
+
   };
 
   const fetchBooking = async () => {
@@ -94,13 +97,11 @@ export const BookingPage = () => {
   };
 
   const handleMonthChange = (e) => {
-    setSelectedMonth(Number(e.target.value));
+    setSelectedMonth(e.target.value);
   };
-
 
   const handleYearChange = (e) => {
     setSelectedYear(e.target.value)
-
   };
 
   return (
@@ -139,19 +140,9 @@ export const BookingPage = () => {
           </div>
           <select value={selectedMonth} onChange={(e) => handleMonthChange(e)}>
             <option value="">Select Month</option>
-            <option value="0">January</option>
-            <option value="1">February</option>
-            <option value="2">March</option>
-            <option value="3">April</option>
-            <option value="4">May</option>
-            <option value="5">June</option>
-            <option value="6">July</option>
-            <option value="7">Auguest</option>
-            <option value="8">September</option>
-            <option value="9">October</option>
-            <option value="10">November</option>
-            <option value="11">December</option>
-
+            {months.map((month, index) => (
+              <option key={index} value={month}>{month}</option>
+            ))}
           </select>
           <select value={selectedYear} onChange={(e) => handleYearChange(e)}>
             <option value="">Select Year</option>
@@ -163,7 +154,7 @@ export const BookingPage = () => {
 
         </div>
         <ClipLoader margin={5} cssOverride={{ 'marginLeft': '50%', 'marginTop': '2%' }} loading={listLoader} />
-        {!showOthers ? <BookingList BookingResponse={bookingResponse} /> : <BookingListOthers BookingResponse={bookingResponse} />}
+        {!showOthers ? <BookingList BookingResponse={bookingResponse} handleRefresh={setHandleRefresh} /> : <BookingListOthers BookingResponse={bookingResponse} handleRefresh={setHandleRefresh}/>}
 
         <AddBooking isOpen={isOpenAddBooking} handleClose={handleClose} />
         <Footer />

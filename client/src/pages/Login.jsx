@@ -113,11 +113,11 @@ export const Login = () => {
 
             <div className="d-flex align-items-center justify-content-between">
               <div className="form-group mb-0">
-                <label className="custom-checkbox mb-0">
+                {/* <label className="custom-checkbox mb-0">
                   <span className="checkbox__title">Remember Me</span>
                   <input className="checkbox__input" type="checkbox" />
                   <span className="checkbox__checkmark"></span>
-                </label>
+                </label> */}
               </div>
               <div className="form-group mb-0">
                 <div className="utility">

@@ -51,7 +51,7 @@ export const AddDisableDate = ({ show, handleClose }) => {
             try {
                 const response = await disableDateService.addDisableDate(formData);
                 if (response.status === 200) {
-                    // toast.success("Disable date added successfully!");
+                     toast.success("Disable date added successfully!");
                     setTimeout(() => {
                         handleModalClose();
                         setFormData(initialFormData);

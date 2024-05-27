@@ -9,7 +9,7 @@ import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css"; 
 
 
-export const BookingListOthers = ({ BookingResponse }) => {
+export const BookingListOthers = ({ BookingResponse, handleRefresh }) => {
 
     const [bookings, setBookings] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -65,10 +65,9 @@ export const BookingListOthers = ({ BookingResponse }) => {
               onClick: () => {
                 bookingService.deleteBooking(bookingId)
                   .then(response => {
+                    handleRefresh(response);
                     toast.success("Booking deleted successfully"); 
-                    setTimeout(() => {
-                        window.location.reload(); 
-                      }, 2000); 
+                  
                   })
                   .catch(error => {
                     toast.error("Failed to delete booking");
@@ -102,12 +101,12 @@ export const BookingListOthers = ({ BookingResponse }) => {
                     </thead>
                     <tbody>
                         {currentBookings.map((booking, index) => (
-                            <tr key={booking._id}>
+                            <tr key={index}>
                                 <td>{booking.bookingCategory}</td>
-                                <td>{booking.mealDate && booking.mealDate.join(', ')}</td>
-                                <td>{booking.totalMeals}</td>
+                                <td>{booking.days && booking.days.join(', ')}</td>
+                                <td>{booking.days && booking.days.length}</td>
                                 <td>{booking.notes}</td>
-                                <td><i style={{ cursor: 'pointer' }} onClick={() => deleteBooking(booking.id)}><MdDelete size={18} /></i></td>
+                                <td><i style={{ cursor: 'pointer' ,color:'red'}} onClick={() => deleteBooking(booking._id)}><MdDelete size={18} /></i></td>
                             </tr>
                         ))}
                     </tbody>

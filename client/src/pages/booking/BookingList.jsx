@@ -5,9 +5,9 @@ import { MdDelete } from "react-icons/md";
 import bookingService from "../../services/bookingService";
 import { toast } from 'react-toastify';
 import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css"; // Importing css
+import "react-confirm-alert/src/react-confirm-alert.css"; 
 
-export const BookingList = ({ BookingResponse }) => {
+export const BookingList = ({ BookingResponse, handleRefresh}) => {
 
   const [bookings, setBookings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,10 +62,8 @@ export const BookingList = ({ BookingResponse }) => {
           onClick: () => {
             bookingService.deleteBooking(bookingId)
               .then(response => {
+                handleRefresh(response);
                 toast.success("Booking deleted successfully");
-                setTimeout(() => {
-                  window.location.reload();
-                }, 2000);
               })
               .catch(error => {
                 toast.error("Failed to delete booking");
@@ -82,7 +80,7 @@ export const BookingList = ({ BookingResponse }) => {
   return (
     <>
       <div>
-        <Table hover className="table-custom">
+        <Table hover className="table-custom" >
           <thead>
             <tr>
               {BookingResponse && (
@@ -100,14 +98,14 @@ export const BookingList = ({ BookingResponse }) => {
           </thead>
           <tbody>
             {currentBookings.map((booking, index) => (
-              <tr key={booking.id}>
+              <tr key={index}>
                 <td>{booking.empCode}</td>
                 <td>{booking.empName}</td>
                 <td>{booking.department}</td>
                 <td>{booking.mealType}</td>
-                <td>{booking.totalMeals}</td>
+                <td>{booking.mealDate && booking.mealDate.length}</td>
                 <td>{booking.mealDate && booking.mealDate.join(', ')}</td>
-                <td><i style={{ cursor: 'pointer' }} onClick={() => deleteBooking(booking.id)}><MdDelete size={18} /></i></td>
+                <td><i style={{ cursor: 'pointer', color:'red' }} onClick={() => deleteBooking(booking.id)}><MdDelete size={18} /></i></td>
               </tr>
             ))}
           </tbody>
