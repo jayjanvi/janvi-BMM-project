@@ -132,34 +132,31 @@ export const AddBooking = ({ isOpen, handleClose }) => {
   };
 
   const isWeekdayWithHolidays = (date) => {
-    console.log('disableDates', disableDates);
     const day = date.getDay();
-    // Check if the date falls on a weekend (Saturday or Sunday)
+   
     if (day === 0 || day === 6) {
-      return false; // Disable weekends
+      return false; 
     }
     return isHoliday(date);
   };
 
   const isHoliday = date => {
-    // Iterate over each holiday period
     for (const holiday of disableDates) {
-      // Extract month, year, start date, and end date from the holiday period
       const [start, end] = holiday.date.split('-');
       const [startDay, startMonth, startYear] = start.split('/');
       const [endDay, endMonth, endYear] = end.split('/');
 
-      // Check if the date falls within the holiday period
+    
       if (
-        date.getMonth() === parseInt(startMonth, 10) - 1 && // Month is 0-indexed
+        date.getMonth() === parseInt(startMonth, 10) - 1 && 
         date.getFullYear() === parseInt(startYear, 10) &&
         date.getDate() >= parseInt(startDay, 10) &&
         date.getDate() <= parseInt(endDay, 10)
       ) {
-        return false; // Disable the date if it falls within a holiday period
+        return false;
       }
     }
-    return true; // Enable the date by default
+    return true; 
   };
 
   return (
@@ -321,7 +318,7 @@ export const AddBooking = ({ isOpen, handleClose }) => {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </div>
   );
 };

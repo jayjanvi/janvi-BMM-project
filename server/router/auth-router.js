@@ -17,6 +17,7 @@ router.route("/changePassword").post(authControllers.changePasswordController);
 router.route("/addUser").post(validate(addUserSchema), userControllers.addUser);
 router.route("/users").get(userControllers.userList);
 router.route("/findUsers").post(userControllers.searchUsers);
+router.route("/deleteUser/:id").delete(userControllers.deleteUser);
 
 // Booking
 router.route("/addBooking").post(bookingControllers.addBooking);
@@ -27,6 +28,5 @@ router.route("/deleteBooking/:id").delete(bookingControllers.deleteBooking);
 //Disable Date
 router.route("/addDisableDate").post(disableDateList.addDisableDate);
 router.route("/disableDatesList").get(disableDateList.disableDateList);
-
 
 module.exports = router;

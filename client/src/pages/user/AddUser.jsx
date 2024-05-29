@@ -257,7 +257,7 @@ export const AddUser = ({ show, handleClose, onAddUser, handleRefresh }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </>
 
   );

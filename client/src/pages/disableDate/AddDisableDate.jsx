@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -14,6 +14,7 @@ export const AddDisableDate = ({ show, handleClose }) => {
         startDate: '',
         endDate: '',
         reason: '',
+        
     };
 
     const [formData, setFormData] = useState(initialFormData);
@@ -21,6 +22,17 @@ export const AddDisableDate = ({ show, handleClose }) => {
     const [endDate, setEndDate] = useState(new Date());
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [disableDates, setDisableDates] = useState(null)
+
+    useEffect(() => {
+        fetchDisableDate();
+      }, []);
+    
+      const fetchDisableDate = async () => {
+        const response = await disableDateService.disableDateList();
+        console.log('res', response);
+        setDisableDates(response.data);
+      }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,6 +41,7 @@ export const AddDisableDate = ({ show, handleClose }) => {
             [name]: value,
         });
     };
+
 
 
     const handleSubmit = async (e) => {
@@ -83,10 +96,40 @@ export const AddDisableDate = ({ show, handleClose }) => {
     };
 
 
-    const isWeekday = (date) => {
+    // const isWeekday = (date) => {
+    //     const day = date.getDay();
+    //     return day !== 0 && day !== 6; // Sunday = 0, Saturday = 6
+    // };
+
+    const isWeekdayWithHolidays = (date) => {
+        console.log('disableDates', disableDates);
         const day = date.getDay();
-        return day !== 0 && day !== 6; // Sunday = 0, Saturday = 6
-    };
+        // Check if the date falls on a weekend (Saturday or Sunday)
+        if (day === 0 || day === 6) {
+          return false; // Disable weekends
+        }
+        return isHoliday(date);
+      };
+    
+      const isHoliday = date => {
+       
+        for (const holiday of disableDates) {
+           const [start, end] = holiday.date.split('-');
+          const [startDay, startMonth, startYear] = start.split('/');
+          const [endDay, endMonth, endYear] = end.split('/');
+        if (
+            date.getMonth() === parseInt(startMonth, 10) - 1 && 
+            date.getFullYear() === parseInt(startYear, 10) &&
+            date.getDate() >= parseInt(startDay, 10) &&
+            date.getDate() <= parseInt(endDay, 10)
+          ) {
+            return false; 
+          }
+        }
+        return true;
+      };
+
+
     return (
         <Modal show={show} onHide={handleModalClose}>
             <Modal.Header closeButton>
@@ -115,7 +158,8 @@ export const AddDisableDate = ({ show, handleClose }) => {
                                 selectsRange
                                 dateFormat="dd-MM-yyyy"
                                 minDate={new Date()}
-                                filterDate={isWeekday}
+                                filterDate={isWeekdayWithHolidays}
+                              
                                 placeholderText="Select Date Range"
                                 className="form-control border-right-0 datepicker-icn" />
 

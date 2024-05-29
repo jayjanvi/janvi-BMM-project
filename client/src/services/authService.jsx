@@ -1,4 +1,3 @@
-// my-app/src/services/AuthService.js
 import axios from "axios";
 
 const URL = "http://localhost:5000";

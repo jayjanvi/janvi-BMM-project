@@ -3,9 +3,9 @@ import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import { MdDelete } from "react-icons/md";
 import bookingService from "../../services/bookingService";
-import { toast } from 'react-toastify';
-import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css"; 
+  import { toast } from 'react-toastify';
+  import { confirmAlert } from "react-confirm-alert";
+  import "react-confirm-alert/src/react-confirm-alert.css"; 
 
 export const BookingList = ({ BookingResponse, handleRefresh}) => {
 
@@ -80,7 +80,7 @@ export const BookingList = ({ BookingResponse, handleRefresh}) => {
   return (
     <>
       <div>
-        <Table hover className="table-custom" >
+        <Table   hover className="table-custom" >
           <thead>
             <tr>
               {BookingResponse && (
@@ -110,6 +110,8 @@ export const BookingList = ({ BookingResponse, handleRefresh}) => {
             ))}
           </tbody>
         </Table>
+        {currentBookings.length === 0 ? 
+            <h5>No booking found!</h5> : ""}
         <div className="d-flex justify-content-end">
           <Pagination>
             <Pagination.Prev

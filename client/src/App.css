@@ -13226,6 +13226,13 @@ img {
   
 }
 
+.search-booking{
+  /* Aligns content to the right */
+  padding: 10px;
+ margin-right: 800px;
+ width:270px;
+ border-radius: 6px;
+}
 
 .left-aligned-content select {
   height: 40px; 

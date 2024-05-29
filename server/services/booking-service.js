@@ -1,6 +1,6 @@
 const Booking = require("../models/booking-model");
-const DisableDates = require("../models/disableDate-model");
 const sendEmail = require("../utils/email/sendEmail");
+const { getAllDiasbleDates } = require("./disableDates-service");
 const { getUserById } = require("./user-service");
 
 const formatDate = async (dateString) => {
@@ -8,15 +8,15 @@ const formatDate = async (dateString) => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  return `${(day < 10 ? "0" : "") + day}-${(month < 10 ? "0" : "") + month}-${year}`;
+  return `${(day < 10 ? "0" : "") + day}-${
+    (month < 10 ? "0" : "") + month
+  }-${year}`;
 };
 
 // Create booking
 const createBooking = async (data) => {
   try {
     const bookings = [];
-
-    // Extract days, month, and year from startDate and endDate
     const startDate = new Date(data.startDate);
     const endDate = new Date(data.endDate);
 
@@ -25,32 +25,33 @@ const createBooking = async (data) => {
     const startYear = startDate.getFullYear();
     const endYear = endDate.getFullYear();
 
-    // If start date and end date are in the same month and year
     if (startMonth === endMonth && startYear === endYear) {
-      const days = getBusinessDays(startDate, endDate);
+      const days = await getBusinessDays(startDate, endDate);
       const month = startDate.toLocaleString("default", { month: "long" });
       const year = startDate.getFullYear();
 
       if (data.employee.length !== 0) {
         for (const employeeId of data.employee) {
-          // Check if the employee already has a booking with the same meal type
+
           let existingBooking = await Booking.findOne({
             employee: employeeId,
             mealType: data.mealType,
             month: month,
             year: year,
-            isDeleted: false
+            isDeleted: false,
           });
 
           if (existingBooking) {
-            // Update the existing booking
-            const combinedDays = Array.from(new Set([...existingBooking.days, ...days]));
+           
+            const combinedDays = Array.from(
+              new Set([...existingBooking.days, ...days])
+            );
             combinedDays.sort((a, b) => a - b);
             existingBooking.days = combinedDays;
             existingBooking.bookingCount = combinedDays.length;
             await existingBooking.save();
           } else {
-            // Create a new booking
+           
             const bookingData = {
               ...data,
               days: days,
@@ -90,31 +91,44 @@ const createBooking = async (data) => {
         const booking = await Booking.create(bookingData);
         return booking;
       }
-    } else { // If start date and end date are in different months
+    } else {
+      // If start date and end date are in different months
       let currentDate = new Date(startDate);
-      while (currentDate.getMonth() !== endDate.getMonth() || currentDate.getFullYear() !== endDate.getFullYear()) {
-        const currentMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-        const bookingEndDate = currentDate.getDate() < currentMonthEndDate.getDate() ? currentDate : currentMonthEndDate;
+      while (
+        currentDate.getMonth() !== endDate.getMonth() ||
+        currentDate.getFullYear() !== endDate.getFullYear()
+      ) {
+        const currentMonthEndDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          0
+        );
+        const bookingEndDate =
+          currentDate.getDate() < currentMonthEndDate.getDate()
+            ? currentDate
+            : currentMonthEndDate;
 
-        const days = getBusinessDays(currentDate, bookingEndDate);
+        const days = await getBusinessDays(bookingEndDate, currentMonthEndDate);
         const month = currentDate.toLocaleString("default", { month: "long" });
         const year = currentDate.getFullYear();
 
         // Process bookings for employees
         if (data.employee.length !== 0) {
           for (const employeeId of data.employee) {
-            // Check if the employee already has a booking with the same meal type
+           
             let existingBooking = await Booking.findOne({
-              employee: employeeId,
+              employee: employeeId, 
               mealType: data.mealType,
               month: month,
               year: year,
-              isDeleted: false
+              isDeleted: false,
             });
 
             if (existingBooking) {
-              // Update the existing booking
-              const combinedDays = Array.from(new Set([...existingBooking.days, ...days]));
+             
+              const combinedDays = Array.from(
+                new Set([...existingBooking.days, ...days])
+              );
               combinedDays.sort((a, b) => a - b);
               existingBooking.days = combinedDays;
               existingBooking.bookingCount = combinedDays.length;
@@ -148,7 +162,8 @@ const createBooking = async (data) => {
               );
             }
           }
-        } else { // Process bookings for non-employees
+        } else {
+          // Process bookings for non-employees
           const bookingData = {
             ...data,
             days: days,
@@ -159,10 +174,14 @@ const createBooking = async (data) => {
           const booking = await Booking.create(bookingData);
           bookings.push(booking);
         }
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        currentDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          1
+        );
       }
       // Process the last month
-      const days = getBusinessDays(currentDate, endDate);
+      const days = await getBusinessDays(currentDate, endDate);
       const month = currentDate.toLocaleString("default", { month: "long" });
       const year = currentDate.getFullYear();
 
@@ -175,12 +194,14 @@ const createBooking = async (data) => {
             mealType: data.mealType,
             month: month,
             year: year,
-            isDeleted: false
+            isDeleted: false,
           });
 
           if (existingBooking) {
             // Update the existing booking
-            const combinedDays = Array.from(new Set([...existingBooking.days, ...days]));
+            const combinedDays = Array.from(
+              new Set([...existingBooking.days, ...days])
+            );
             combinedDays.sort((a, b) => a - b);
             existingBooking.days = combinedDays;
             existingBooking.bookingCount = combinedDays.length;
@@ -214,7 +235,8 @@ const createBooking = async (data) => {
             );
           }
         }
-      } else { // Process bookings for non-employees
+      } else {
+        // Process bookings for non-employees
         const bookingData = {
           ...data,
           days: days,
@@ -298,56 +320,14 @@ const getAllBookings = async (data) => {
     throw new Error("Error fetching bookings: " + error.message);
   }
 };
-// Define a function to update all bookings with employee details
-// async function getBookingsDetailsForEmployee(bookings, date) {
-//   const bookingObjs = [];
-//   let user = {};
-//   // Iterate through each booking
-//   for (const booking of bookings) {
-//     // Update booking object with employee details
-//     try {
-//       user = await getUserById(booking.employee);
-//     } catch (error) {
-//       throw new Error("User not found: " + booking.employee);
-//     }
-//     // Construct booking object for each employee
-//     const bookingObj = {
-//       id: booking._id,
-//       empCode: user.code,
-//       empName: user.username,
-//       department: user.department,
-//       mealType: booking.mealType,
-//       totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
-//       mealDate: getBusinessDays(booking.startDate, booking.endDate), // Assuming startDate is a Date object
-//     };
-//     bookingObjs.push(bookingObj);
-//   }
-//   return bookingObjs;
-// }
 async function getBookingsDetailsForNonEmployee(bookings, date) {
   const bookingObjs = [];
   const month = date.split("-")[0];
   const year = date.split("-")[1];
 
   const filteredBookings = bookings.filter((booking) => {
-    return (booking.month === month && booking.year === Number(year));
+    return booking.month === month && booking.year === Number(year);
   });
-
-  // for (const booking of filteredBookings) {
-  //   let newBooking = {
-  //     id: booking._id,
-  //     bookingCategory: booking.bookingCategory,
-  //     notes: booking.notes,
-  //     mealType: booking.mealType,
-  //     date:
-  //       formatDateList(booking.startDate) +
-  //       "-" +
-  //       formatDateList(booking.endDate),
-  //     totalMeals: getBusinessDaysCount(booking.startDate, booking.endDate),
-  //     mealDate: getBusinessDays(booking.startDate, booking.endDate),
-  //   };
-  //   bookingObjs.push(newBooking);
-  // }
   return filteredBookings;
 }
 
@@ -362,16 +342,8 @@ async function getBookingsDetailsForEmployee(bookings, date) {
   const year = date.split("-")[1];
 
   const filteredBookings = bookings.filter((booking) => {
-    return (booking.month === month && booking.year === Number(year));
+    return booking.month === month && booking.year === Number(year);
   });
-
-  // const dates = await DisableDates.find();
-
-  // const disableDates = dates.filter((date) => {
-  //   const dateMonth = date.startDate.getMonth(); // Extract the month from the booking's startDate
-  //   const dateYear = date.startDate.getFullYear(); // Extract the year from the booking's startDate
-  //   return dateMonth === parseInt(month, 10) && dateYear === parseInt(year, 10);
-  // });
 
   const userBookingsMap = new Map();
 
@@ -390,35 +362,12 @@ async function getBookingsDetailsForEmployee(bookings, date) {
       empName: user.username,
       department: user.department,
       mealType: booking.mealType,
-      // startDate: booking.startDate,
-      // endDate: booking.endDate,
       totalMeals: booking.days.length,
-      mealDate: booking.days
+      mealDate: booking.days,
     };
 
-    const employeeIdWithType = booking.employee + newBooking.mealType;
-
-    // if (userBookingsMap.has(employeeIdWithType)) {
-    //   const oldEmp = userBookingsMap.get(employeeIdWithType);
-    //   const index = bookingObjs.findIndex((b) => b.empCode === oldEmp.empCode);
-    //   if (index !== -1) {
-    //     const mealDates = Array.from(
-    //       new Set(
-    //         oldEmp.mealDate.concat(
-    //           getBusinessDays(booking.startDate, booking.endDate)
-    //         )
-    //       )
-    //     );
-    //     const sortedMealDates = mealDates.sort((a, b) => a - b);
-    //     if (bookingObjs[index].mealType === newBooking.mealType) {
-    //       bookingObjs[index].mealDate = sortedMealDates;
-    //       bookingObjs[index].totalMeals = bookingObjs[index].mealDate.length;
-    //     }
-    //   }
-    // } else {
     userBookingsMap.set(booking.employee + newBooking.mealType, newBooking);
     bookingObjs.push(newBooking);
-    // }
   }
 
   return bookingObjs;
@@ -430,7 +379,7 @@ async function getBookingsByDate(date) {
     const year = date.split("-")[1]; // Extract the year from the provided date
     const bookings = await Booking.find({ isDeleted: false });
     const filteredBookings = bookings.filter((booking) => {
-      return (booking.month === month && booking.year === Number(year));
+      return booking.month === month && booking.year === Number(year);
     });
     return filteredBookings;
   } catch (error) {
@@ -438,33 +387,15 @@ async function getBookingsByDate(date) {
   }
 }
 
-function getBusinessDaysCount(startDate, endDate) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  let count = 0;
-
-  // Loop through each day between start and end dates
-  for (
-    let current = start;
-    current <= end;
-    current.setDate(current.getDate() + 1)
-  ) {
-    // Check if the current day is not a weekend (Saturday or Sunday)
-    if (current.getDay() !== 0 && current.getDay() !== 6) {
-      count++;
-    }
-  }
-  return count;
-}
 // Function to get business days between two dates
-const getBusinessDays = (startDate, endDate) => {
+const getBusinessDays = async (startDate, endDate) => {
   const dates = [];
   const current = new Date(startDate);
   const end = new Date(endDate);
-
+  const disableDates = await getAllDiasbleDates();
   while (current <= end) {
     // Check if the current day is not a weekend (Saturday or Sunday)
-    if (current.getDay() !== 0 && current.getDay() !== 6) {
+    if (await isWeekdayWithHolidays(current,disableDates)) {
       dates.push(current.getDate());
     }
     current.setDate(current.getDate() + 1);
@@ -472,39 +403,30 @@ const getBusinessDays = (startDate, endDate) => {
   return dates;
 };
 
-// function getBusinessDays(startDate, endDate, disableDates) {
-//   const dates = [];
-//   const current = new Date(startDate);
-//   const end = new Date(endDate);
-// if (disableDates) {
-//   while (current <= end) {
-//     // Check if the current day is not a weekend (Saturday or Sunday)
-//     if (current.getDay() !== 0 && current.getDay() !== 6) {
-//       // Check if the current date is not in the disabled dates range
-//       const isDisabled = disableDates.some((disabledRange) => {
-//         const disabledStart = new Date(disabledRange.startDate);
-//         const disabledEnd = new Date(disabledRange.endDate);
-//         return current >= disabledStart && current <= disabledEnd;
-//       });
+const isWeekdayWithHolidays = async (date,disableDates) => {
+  const day = date.getDay();
+  // Check if the date falls on a weekend (Saturday or Sunday)
+  if (day === 0 || day === 6) {
+    return false; // Disable weekends
+  }
+  return !await isHoliday(date,disableDates); // Check if it's a holiday
+};
 
-//       if (!isDisabled) {
-//         dates.push(current.getDate());
-//       }
-//     }
-//     current.setDate(current.getDate() + 1);
-//   }
-// }
-// else {
-//   while (current <= end) {
-//     // Check if the current day is not a weekend (Saturday or Sunday)
-//     if (current.getDay() !== 0 && current.getDay() !== 6) {
-//       dates.push(current.getDate());
-//     }
-//     current.setDate(current.getDate() + 1);
-//   }
-// }
-// return dates;
-// }
+const isHoliday = async (date,disableDates) => {
+  for (const holiday of disableDates) {
+    const [start, end] = holiday.date.split("-");
+    const [startDay, startMonth, startYear] = start.split("/");
+    const [endDay, endMonth, endYear] = end.split("/");
+
+    const startDate = new Date(startYear, startMonth - 1, startDay);
+    const endDate = new Date(endYear, endMonth - 1, endDay);
+
+    if (date >= startDate && date <= endDate) {
+      return true; // Date is within a holiday period
+    }
+  }
+  return false; // Date is not a holiday
+};
 
 // Get booking by ID
 const getBookingById = async (bookingId) => {

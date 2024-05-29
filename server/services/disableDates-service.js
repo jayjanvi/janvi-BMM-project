@@ -13,17 +13,17 @@ const addDisableDates = async (data) => {
       if (booking.employee) {
         try {
           let user = await getUserById(booking.employee);
-          // sendEmail(
-          //   user.email,
-          //   "Meal Book Cancelled from admin",
-          //   {
-          //     name: user.username,
-          //     bookingType: booking.mealType,
-          //     startDate: await formatDate(data.startDate),
-          //     endDate: await formatDate(data.endDate),
-          //   },
-          //   "./template/bookingConfirm.handlebars"
-          // );
+          sendEmail(
+            user.email,
+            "Meal Book Cancelled from admin",
+            {
+              name: user.username,
+              bookingType: booking.mealType,
+              startDate: formatDate(data.startDate),
+              endDate: formatDate(data.endDate),
+            },
+            "./template/bookingCancelled.handlebars"
+          );
         } catch (error) {
           throw new Error("User not found: " + booking.employee);
         }

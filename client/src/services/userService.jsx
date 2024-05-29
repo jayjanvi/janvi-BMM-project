@@ -9,6 +9,10 @@ class UserService {
     return axios.get(URL+"/api/auth/users");
   }
 
+  deleteUser(userId) {
+    return axios.delete(URL+"/api/auth/deleteUser/"+userId);
+  }
+
   searchUsers(value) {
     return axios.post(URL+"/api/auth/findUsers",value);
   }

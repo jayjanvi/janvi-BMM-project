@@ -71,7 +71,6 @@ export const DisableDateList = () => {
             <tr key={index}>
               <td>{index + 1 + indexOfFirstDisableDate}</td>
               <td>{disableDate.date}</td>
-              {/* <td>{new Date(disableDate.date).toLocaleDateString()}</td> */}
               <td>{disableDate.reason}</td>
             </tr>
           ))}

@@ -5,14 +5,14 @@ const path = require("path");
 
 const sendEmail = async (email, subject, payload, template) => {
   try {
-    // create reusable transporter object using the default SMTP transport
+    
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: 465,
       secure: true,
       auth: {
         user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD, // naturally, replace both with your real credentials or an application-specific password
+        pass: process.env.EMAIL_PASSWORD, 
       },
     });
 

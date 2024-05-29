@@ -21,6 +21,5 @@ const disableDateSchema = new Schema({
   
 });
 
-// define the model or the collection name
 const DisableDates = new mongoose.model("DisableDates", disableDateSchema);
 module.exports = DisableDates;

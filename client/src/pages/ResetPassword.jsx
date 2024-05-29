@@ -63,7 +63,7 @@ export const ResetPassword = () => {
 
     if (Object.keys(newErrors).length === 0) {
       try {
-        // Call the reset password API
+       
         const body = {
           token: token,
           userId: userId,
@@ -84,10 +84,10 @@ export const ResetPassword = () => {
         console.error('Error:', error);
         toast.error('An error occurred. Please try again later.');
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false); 
       }
     } else {
-      setLoading(false); // Stop loading
+      setLoading(false); 
     }
   };
 
@@ -110,14 +110,14 @@ export const ResetPassword = () => {
                   name="newPassword"
                   id="password-field"
                   className="form-control"
-                  type={showPassword ? "text" : "password"} // Toggle password visibility
+                  type={showPassword ? "text" : "password"} 
                   required
                   placeholder="New Password"
                   value={formData.newPassword}
                   onChange={handleChange}
                   isInvalid={!!errors.newPassword} />
                 <span
-                  onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
+                  onClick={togglePasswordVisibility} 
                   className={`field-icon-password toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                 ></span>
                 <Form.Control.Feedback type="invalid">{errors.newPassword}</Form.Control.Feedback>
@@ -128,14 +128,14 @@ export const ResetPassword = () => {
                   name="confirmPassword"
                   id="password-field"
                   className="form-control"
-                  type={showPassword ? "text" : "password"} // Toggle password visibility
+                  type={showPassword ? "text" : "password"}
                   required
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   isInvalid={!!errors.confirmPassword} />
                 <span
-                  onClick={togglePasswordVisibility} // Add onClick event to toggle password visibility
+                  onClick={togglePasswordVisibility}
                   className={`field-icon-password toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                 ></span>
                 <Form.Control.Feedback type="invalid">{errors.confirmPassword}</Form.Control.Feedback>
@@ -153,7 +153,7 @@ export const ResetPassword = () => {
           </div>
         </div>
       </section>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </>
   );
 };

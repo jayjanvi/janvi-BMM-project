@@ -17,7 +17,7 @@ export const BookingPage = () => {
     "June", "July", "August", "September", "October",
     "November", "December"
   ];
-
+  const [searchQuery, setSearchQuery] = useState("");
   const [isOpenAddBooking, setIsOpenAddBooking] = useState(false);
   const [showOthers, setShowOthers] = useState(false);
   const [listLoader, setListLoader] = useState(false);
@@ -30,7 +30,7 @@ export const BookingPage = () => {
 
   useEffect(() => {
     fetchBooking();
-  }, [showOthers, selectedMonth, selectedYear, isOpenAddBooking,handleRefresh]);
+  }, [showOthers, selectedMonth, selectedYear, isOpenAddBooking, handleRefresh]);
 
   const downloadExcel = () => {
     setListLoader(true);
@@ -92,10 +92,6 @@ export const BookingPage = () => {
     }
   };
 
-  const handleFilter = () => {
-    fetchBooking();
-  };
-
   const handleMonthChange = (e) => {
     setSelectedMonth(e.target.value);
   };
@@ -103,6 +99,22 @@ export const BookingPage = () => {
   const handleYearChange = (e) => {
     setSelectedYear(e.target.value)
   };
+
+  const handleSearchInputChange = (e) => {
+    // fetchBooking(e.target.value.toLowerCase());
+    setSearchQuery(e.target.value.toLowerCase());
+  };
+
+  const getFilteredBookings = () => {
+    if (!bookingResponse) return [];
+    return bookingResponse.data.filter(booking => 
+      // booking.empCode?.toLowerCase().includes(searchQuery) ||
+      booking.empName.toLowerCase().includes(searchQuery) ||
+      booking.department.toLowerCase().includes(searchQuery) ||
+      booking.mealType?.toLowerCase?.().includes(searchQuery)
+    );
+  };
+
 
   return (
     <>
@@ -131,6 +143,14 @@ export const BookingPage = () => {
           </a>
         </div>
         <div className="left-aligned-content">
+            <input
+              className="search-booking"
+              type="text"
+              placeholder="Search Booking"
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+
+            />
 
           <div className="tooltip-container">
             <TiExport size={28} onClick={downloadExcel} />
@@ -138,6 +158,8 @@ export const BookingPage = () => {
               Click to download the booking data as an Excel file
             </span>
           </div>
+
+
           <select value={selectedMonth} onChange={(e) => handleMonthChange(e)}>
             <option value="">Select Month</option>
             {months.map((month, index) => (
@@ -154,7 +176,7 @@ export const BookingPage = () => {
 
         </div>
         <ClipLoader margin={5} cssOverride={{ 'marginLeft': '50%', 'marginTop': '2%' }} loading={listLoader} />
-        {!showOthers ? <BookingList BookingResponse={bookingResponse} handleRefresh={setHandleRefresh} /> : <BookingListOthers BookingResponse={bookingResponse} handleRefresh={setHandleRefresh}/>}
+        {!showOthers ? <BookingList BookingResponse={{ data: getFilteredBookings() }} handleRefresh={setHandleRefresh} /> : <BookingListOthers BookingResponse={bookingResponse} handleRefresh={setHandleRefresh} />}
 
         <AddBooking isOpen={isOpenAddBooking} handleClose={handleClose} />
         <Footer />

@@ -47,6 +47,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isDeleted: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     department: {
       type: String,
       required: false,
@@ -75,7 +80,7 @@ userSchema.pre('save', async function(next) {
   const doc = this;
   if (!doc.code) {
       try {
-          // Find and increment the sequence value
+          
           const sequence = await Sequence.findByIdAndUpdate(
               { _id: 'userId' },
               { $inc: { sequence_value: 1 } },
@@ -91,7 +96,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-//compare password
+// to compare encrypted password
 userSchema.methods.comparePassword = async function (password) {
   return bcrypt.compare(password, this.password);
 };
@@ -107,7 +112,7 @@ userSchema.methods.generateToken = async function () {
       },
       process.env.JWT_SECRET_KEY,
       {
-        expiresIn: "30m",
+        expiresIn: "1m",
       }
     );
   } catch (error) {
@@ -115,11 +120,10 @@ userSchema.methods.generateToken = async function () {
   }
 };
 
-//compare password for login
-userSchema.methods.comparePassword = async function (password) {
-  return bcrypt.compare(password, this.password);
-};
 
-// define the model or the collection name
+// userSchema.methods.comparePassword = async function (password) {
+//   return bcrypt.compare(password, this.password);
+// };
+
 const User = new mongoose.model("User", userSchema);
 module.exports = User;

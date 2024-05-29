@@ -52,6 +52,5 @@ const bookingSchema = new Schema({
   }
 });
 
-// define the model or the collection name
 const Booking = new mongoose.model("Booking", bookingSchema);
 module.exports = Booking;

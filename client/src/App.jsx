@@ -37,6 +37,7 @@ const PrivateRoute = ({ pageLoad }) => {
       {pageLoad === "home" && <BookingCalendar />}
       {pageLoad === "user" && <UserFile />}
       {pageLoad === "booking" && <BookingPage />}
+      {pageLoad === "disableDate" && <DisableDateList />}
     </>
   ) : (
     <Navigate to="/login" replace />

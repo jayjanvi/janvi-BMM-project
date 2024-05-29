@@ -11,8 +11,8 @@ export const Login = () => {
     password: "",
   });
 
-  const [loading, setLoading] = useState(false); 
-  const [showPassword, setShowPassword] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInput = (e) => {
     let name = e.target.name;
@@ -29,7 +29,6 @@ export const Login = () => {
   };
 
   const handleForgotPassword = () => {
-    
     navigate("/forgotPassword");
   };
 
@@ -50,7 +49,7 @@ export const Login = () => {
       if (error.response) {
         toast.error(error.response.data.message);
       } else {
-        toast.error("PLease try again!");
+        toast.error("Please try again!");
       }
       setLoading(false);
     }
@@ -98,7 +97,7 @@ export const Login = () => {
                   name="password"
                   id="password-field"
                   className="form-control"
-                  type={showPassword ? "text" : "password"} 
+                  type={showPassword ? "text" : "password"}
                   required
                   placeholder="Password"
                   value={user.password}

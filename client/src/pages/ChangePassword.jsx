@@ -101,7 +101,7 @@ export const ChangePassword = ({ show, handleClose }) => {
     const handleModalClose = () => {
         handleClose();
         setFormData(initialFormData);
-        setLoading(false); // Reset form data after closing the modal
+        setLoading(false); 
       };
 
       

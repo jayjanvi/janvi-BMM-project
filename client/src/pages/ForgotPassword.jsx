@@ -38,6 +38,7 @@ export const ForgotPassword = () => {
       if (response.status === 200) {
         localStorage.setItem("user", JSON.stringify(response.data));
         setTimeout(() => {
+          
         toast.success('Password reset instructions sent to your email.');
         setLoading(false);
           },2000);

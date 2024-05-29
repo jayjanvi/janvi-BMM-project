@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
-import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import userService from "../../services/userService";
+import { MdDelete } from "react-icons/md";
+import { toast } from 'react-toastify';
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css"; 
 
-export const UserList = ({ userResponse }) => {
+export const UserList = ({ userResponse, handleRefresh }) => {
 
   const [users, setUsers] = useState([]);  
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,7 +16,6 @@ export const UserList = ({ userResponse }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
-  
     if (userResponse) {
       setCurrentPage(1)
       if (showOthers) {
@@ -50,6 +53,32 @@ export const UserList = ({ userResponse }) => {
     setCurrentPage(pageNumber);
   };
 
+  const deleteUsers = (userId) => {
+    confirmAlert({
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this User?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            userService.deleteUser(userId)
+              .then(response => {
+                handleRefresh(response);
+                toast.success("User deleted successfully!");
+              })
+              .catch(error => {
+                toast.error("Failed to delete user");
+              });
+          }
+        },
+        {
+          label: "No",
+          onClick: () => { }
+        }
+      ]
+    });
+  }
+
   return (
     <>
       <div className="content-tab">
@@ -68,6 +97,7 @@ export const UserList = ({ userResponse }) => {
             <th >Email  </th>
             <th >Phone</th>
             {!showOthers && <th> Department </th>}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -78,6 +108,7 @@ export const UserList = ({ userResponse }) => {
               <td>{user.email}</td>
               <td>{user.phone}</td>
               {!showOthers && <td>{user.department}</td>}
+              <td><i style={{ cursor: 'pointer', color:'red' }} onClick={() => deleteUsers(user._id)}><MdDelete size={18} /></i></td>
             </tr>
           ))}
           

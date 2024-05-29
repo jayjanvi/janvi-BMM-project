@@ -111,6 +111,8 @@ export const BookingListOthers = ({ BookingResponse, handleRefresh }) => {
                         ))}
                     </tbody>
                 </Table>
+                {currentBookings.length === 0 ? 
+              <h5> No booking found!</h5> : ""}
                 <div className="d-flex justify-content-end">
                     <Pagination>
                         <Pagination.Prev
