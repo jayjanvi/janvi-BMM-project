@@ -329,6 +329,27 @@ async function getBookingsDetailsForEmployee(bookings, date) {
   const bookingObjs = [];
   const month = date.split("-")[0];
   const year = date.split("-")[1];
+  if (month === "All") {
+    for (const booking of bookings) {
+      let user = {};
+      try {
+        user = await getUserById(booking.employee);
+      } catch (error) {
+        throw new Error("User not found: " + booking.employee);
+      }
+      let newBooking = {
+        id: booking._id,
+        empCode: user.code,
+        empName: user.username,
+        department: user.department,
+        mealType: booking.mealType,
+        totalMeals: booking.days.length,
+        mealDate: booking.days,
+      };
+      bookingObjs.push(newBooking);
+    }
+    return bookingObjs;
+  }
 
   const filteredBookings = bookings.filter((booking) => {
     return booking.month === month && booking.year === Number(year);

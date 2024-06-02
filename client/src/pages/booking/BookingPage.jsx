@@ -113,8 +113,8 @@ export const BookingPage = () => {
       (booking.empName && booking.empName.toLowerCase().includes(lowerCaseSearchQuery)) ||
       (booking.department && booking.department.toLowerCase().includes(lowerCaseSearchQuery)) ||
       (booking.mealType && booking.mealType.toLowerCase().includes(lowerCaseSearchQuery)) ||
-      (booking.bookingCategory && booking.bookingCategory.toLowerCase().includes(lowerCaseSearchQuery))
-
+      (booking.bookingCategory && booking.bookingCategory.toLowerCase().includes(lowerCaseSearchQuery)) ||
+      (booking.notes && booking.notes.toLowerCase().includes(lowerCaseSearchQuery))
     );
   };
 
@@ -162,7 +162,7 @@ export const BookingPage = () => {
 
           <select value={selectedMonth} onChange={(e) => handleMonthChange(e)}>
             <option value="">Select Month</option>
-            <option value="all">All Months</option>
+            <option value="All">All</option>
             {months.map((month, index) => (
               <option key={index} value={month}>{month}</option>
             ))}
@@ -175,7 +175,8 @@ export const BookingPage = () => {
           </select>
         </div>
         <ClipLoader margin={5} cssOverride={{ 'marginLeft': '50%', 'marginTop': '2%' }} loading={listLoader} />
-        {!showOthers ? <BookingList BookingResponse={{ data: getFilteredBookings() }} handleRefresh={setHandleRefresh} /> : <BookingListOthers BookingResponse={bookingResponse} handleRefresh={setHandleRefresh} />}
+        {!showOthers ? <BookingList BookingResponse={{ data: getFilteredBookings() }} handleRefresh={setHandleRefresh} /> :
+          <BookingListOthers BookingResponse={{ data: getFilteredBookings() }} handleRefresh={setHandleRefresh} />}
 
         <AddBooking isOpen={isOpenAddBooking} handleClose={handleClose} />
         <Footer />
