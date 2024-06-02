@@ -5,18 +5,16 @@ import { ChangePassword } from "../pages/ChangePassword";
 import { confirmAlert } from "react-confirm-alert";
 import { IoMdSettings } from "react-icons/io";
 import "react-confirm-alert/src/react-confirm-alert.css"; 
+
 export const Navbar = () => {
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState(null);
-
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
   const [openDropdown, setOpenDropdown] = useState("");
-
  
   const toggleDropdown = (dropdown) => {
     setOpenDropdown(openDropdown === dropdown ? "" : dropdown);

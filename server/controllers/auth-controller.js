@@ -27,7 +27,6 @@ const resetPasswordController = async (req, res) => {
   return res.json(resetPasswordService);
 };
 
-
 const changePasswordController = async (req, res) => {
   const changePasswordService = await changePassword(
     req.body.userId,

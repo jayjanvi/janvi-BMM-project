@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { ClipLoader } from 'react-spinners';
 import UserService from "../../services/userService";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export const AddUser = ({ show, handleClose, onAddUser, handleRefresh }) => {
   const initialFormData = {
@@ -42,7 +42,6 @@ export const AddUser = ({ show, handleClose, onAddUser, handleRefresh }) => {
     e.preventDefault();
 
     let newErrors = {};
-
 
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
@@ -98,7 +97,6 @@ export const AddUser = ({ show, handleClose, onAddUser, handleRefresh }) => {
           toast.error("Sorry! User not created");
           setLoading(false);
         }
-
       } catch (error) {
         if (error.response) {
           toast.error(error.response.data.message);
@@ -108,26 +106,10 @@ export const AddUser = ({ show, handleClose, onAddUser, handleRefresh }) => {
     }
   };
 
-  // const sendEmail = async (email, password) => {
-  //   try {
-  //     const response = await authService.forgotPassword({ email, password });
-  //     if (response.status === 200) {
-  //       console.log('Email sent successfully');
-  //     } else {
-  //       console.error('Failed to send email:', response.data.message);
-  //       throw new Error(response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error sending email:', error);
-  //     throw new Error('Failed to send email');
-  //   }
-  // };
-
   const handleModalClose = () => {
     handleClose();
     setFormData(initialFormData);
     setLoading(false);
-
   }
 
   return (
@@ -257,8 +239,6 @@ export const AddUser = ({ show, handleClose, onAddUser, handleRefresh }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* <ToastContainer /> */}
     </>
-
   );
 };

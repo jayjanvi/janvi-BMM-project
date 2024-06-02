@@ -7,18 +7,18 @@ export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setEmail(e.target.value);
     setError('');
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     console.log('Submitting email:', email);
-  
-    
+
     if (!email.trim()) {
       toast.error('Email is required');
       return;
@@ -28,22 +28,21 @@ export const ForgotPassword = () => {
     }
 
     try {
-      
-      const body={
-         email:email,
+      const body = {
+        email: email,
       }
       setLoading(true);
-      
+
       const response = await authService.forgotPassword(body);
       if (response.status === 200) {
         localStorage.setItem("user", JSON.stringify(response.data));
         setTimeout(() => {
-          
-        toast.success('Password reset instructions sent to your email.');
-        setLoading(false);
-          },2000);
+
+          toast.success('Password reset instructions sent to your email.');
+          setLoading(false);
+        }, 2000);
       } else {
-        toast.error(response.data.message); 
+        toast.error(response.data.message);
         setLoading(false);
       }
     } catch (error) {
@@ -76,22 +75,22 @@ export const ForgotPassword = () => {
                   placeholder="Enter Your Email"
                   autoFocus
                 />
-                
+
                 {error && <div className="icon-after icon-red"><i className="icon-error"></i></div>}
               </div>
-              
+
               {error && <div className="error-message">{error}</div>}
-           
+
               {successMessage && <div className="success-message">{successMessage}</div>}
             </div>
             <div className="form-group btn-container">
               <button className="btn btn-xl btn-primary">
-              {loading ? (
+                {loading ? (
                   <ClipLoader color={'#ffffff'} loading={loading} size={25} />
                 ) : (
                   "Submit"
                 )}
-                </button>
+              </button>
             </div>
           </form>
         </div>

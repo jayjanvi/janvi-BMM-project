@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
-import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { MdDelete } from "react-icons/md";
 import bookingService from "../../services/bookingService";
 import { toast } from 'react-toastify';
 import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css"; 
-
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 export const BookingListOthers = ({ BookingResponse, handleRefresh }) => {
 
     const [bookings, setBookings] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [BookingsPerPage] = useState(10);
-    const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
     useEffect(() => {
         if (BookingResponse) {
@@ -23,75 +20,52 @@ export const BookingListOthers = ({ BookingResponse, handleRefresh }) => {
         }
     }, [BookingResponse]);
 
-    // const sortedBookings = bookings.sort((a, b) => {
-    //     if (!sortConfig) {
-    //         return 0;
-    //     }
-    //     const key = sortConfig.key;
-    //     const direction = sortConfig.direction === 'asc' ? 1 : -1;
-    //     if (a[key] < b[key]) return -1 * direction;
-    //     if (a[key] > b[key]) return 1 * direction;
-    //     return 0;
-    // });
-
     const indexOfLastUser = currentPage * BookingsPerPage;
     const indexOfFirstUser = indexOfLastUser - BookingsPerPage;
     const currentBookings = bookings.slice(indexOfFirstUser, indexOfLastUser);
-
-    // const renderSortIcon = (key) => {
-    //     if (!sortConfig || sortConfig.key !== key) { return <FaSort />; }
-    //     return (sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />);
-    // };
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
-    // const handleSort = (key) => {
-    //     let direction = 'asc';
-    //     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-    //         direction = 'desc';
-    //     }
-    //     setSortConfig({ key, direction });
-    // };
-
     const deleteBooking = (bookingId) => {
         confirmAlert({
-          title: "Confirm Delete",
-          message: "Are you sure you want to delete this booking?",
-          buttons: [
-            {
-              label: "Yes",
-              onClick: () => {
-                bookingService.deleteBooking(bookingId)
-                  .then(response => {
-                    handleRefresh(response);
-                    toast.success("Booking deleted successfully"); 
-                  
-                  })
-                  .catch(error => {
-                    toast.error("Failed to delete booking");
-                  });
-              }
-            },
-            {
-              label: "No",
-              onClick: () => {}
-            }
-          ]
+            title: "Confirm Delete",
+            message: "Are you sure you want to delete this booking?",
+            buttons: [
+                {
+                    label: "Yes",
+                    onClick: () => {
+                        bookingService.deleteBooking(bookingId)
+                            .then(response => {
+                                handleRefresh(response);
+                                toast.success("Booking deleted successfully");
+
+                            })
+                            .catch(error => {
+                                toast.error("Failed to delete booking");
+                            });
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: () => { }
+                }
+            ]
         });
-      }
+    }
 
     return (
         <>
             <div>
-                <Table hover className="table-custom">
+                <Table style={{ border: 1 }} hover className="table-custom">
                     <thead>
                         <tr>
                             {BookingResponse && (
                                 <>
                                     <th>Booking Category</th>
                                     <th>Date</th>
+                                    <th>Meal Type</th>
                                     <th>Booking Count</th>
                                     <th>Notes</th>
                                     <th>Action</th>
@@ -104,15 +78,19 @@ export const BookingListOthers = ({ BookingResponse, handleRefresh }) => {
                             <tr key={index}>
                                 <td>{booking.bookingCategory}</td>
                                 <td>{booking.days && booking.days.join(', ')}</td>
+                                <td>{booking.mealType}</td>
                                 <td>{booking.days && booking.days.length}</td>
                                 <td>{booking.notes}</td>
-                                <td><i style={{ cursor: 'pointer' ,color:'red'}} onClick={() => deleteBooking(booking._id)}><MdDelete size={18} /></i></td>
+                                <td><i style={{ cursor: 'pointer', color: 'red' }} onClick={() => deleteBooking(booking._id)}><MdDelete size={18} /></i></td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
-                {currentBookings.length === 0 ? 
-              <h5> No booking found!</h5> : ""}
+                {currentBookings.length === 0 ?
+                    <div style={{ color: 'red', fontSize: '18px', fontWeight: 'bold', textAlign: 'center', marginTop: '20px' }}>
+                        <h5>No booking found!</h5>
+                    </div>
+                    : ""}
                 <div className="d-flex justify-content-end">
                     <Pagination>
                         <Pagination.Prev
@@ -134,6 +112,5 @@ export const BookingListOthers = ({ BookingResponse, handleRefresh }) => {
                 </div>
             </div>
         </>
-
     );
 };

@@ -3,7 +3,7 @@ export const Footer = () => {
         <div className="footer">
         <div className="container">
           <div className="footer-block">
-            <p>Copyright © 2022 Rishabh Software. All Rights Reserved.</p>
+            <p>Copyright © 2024 Rishabh Software. All Rights Reserved.</p>
             <div className="social">
               <a href="https://www.facebook.com/rishabhsoft" aria-label="Facebook"><i className="icon-facebook"></i></a>
               <a href="https://www.instagram.com/rishabhsoft/" aria-label="Instagram"><i className="icon-instagram"></i></a>

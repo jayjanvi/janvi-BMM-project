@@ -9,7 +9,7 @@ export const Home = () => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  
+
   const handleShow = () => {
     console.log('handle show called ')
     setShow(true)
@@ -32,7 +32,7 @@ export const Home = () => {
       </div>
       <AddUser key={show.toString()} show={show} handleClose={handleClose} />
       <UserList />
-      
+
       {/* Footer */}
       <div className="footer">
         <div className="container">

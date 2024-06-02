@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const User = require("./user-model");
 const Schema = mongoose.Schema;
 
 // Define the Booking schema
@@ -49,7 +48,7 @@ const bookingSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     required: false,
-  }
+  },
 });
 
 const Booking = new mongoose.model("Booking", bookingSchema);

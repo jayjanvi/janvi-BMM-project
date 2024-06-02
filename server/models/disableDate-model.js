@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const User = require("./user-model");
 const Schema = mongoose.Schema;
 
 // Define the Booking schema
@@ -18,7 +17,6 @@ const disableDateSchema = new Schema({
     type: String,
     default: false,
   },
-  
 });
 
 const DisableDates = new mongoose.model("DisableDates", disableDateSchema);

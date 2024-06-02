@@ -15,10 +15,10 @@ const loginUser = async (data) => {
     if (!userExist) {
       throw new Error("Invalid email or password", 400);
     }
-    
+
     // Compare the provided password with the hashed password
     const passwordMatch = await bcrypt.compare(password, userExist.password);
-    
+
     if (passwordMatch) {
       // Check if the user is an admin
       if (userExist.isAdmin) {
@@ -58,7 +58,12 @@ const requestPasswordReset = async (email) => {
   }).save();
 
   const link = `${clientURL}/passwordReset?token=${resetToken}&id=${user._id}`;
-  sendEmail(user.email, "Password Reset Request", {name: user.name,link: link,}, "./template/requestResetPassword.handlebars");
+  sendEmail(
+    user.email,
+    "Password Reset Request",
+    { name: user.name, link: link },
+    "./template/requestResetPassword.handlebars"
+  );
   return link;
 };
 
@@ -78,7 +83,12 @@ const resetPassword = async (userId, token, password) => {
     { new: true }
   );
   const user = await User.findById({ _id: userId });
-  sendEmail( user.email, "Password Reset Successfully", { name: user.name, }, "./template/resetPassword.handlebars");
+  sendEmail(
+    user.email,
+    "Password Reset Successfully",
+    { name: user.name },
+    "./template/resetPassword.handlebars"
+  );
   await passwordResetToken.deleteOne();
   return true;
 };
@@ -91,7 +101,12 @@ const changePassword = async (userId, password) => {
     { new: true }
   );
   const user = await User.findById({ _id: userId });
-  sendEmail( user.email, "Password Reset Successfully", { name: user.name,changedPassword: password }, "./template/resetPassword.handlebars");
+  sendEmail(
+    user.email,
+    "Password Reset Successfully",
+    { name: user.name, changedPassword: password },
+    "./template/resetPassword.handlebars"
+  );
   return true;
 };
 
@@ -99,12 +114,16 @@ const forgotPassword = async (userId, email) => {
   const hash = await bcrypt.hash(password, Number(bcryptSalt));
   await User.updateOne(
     { _id: userId },
-    {email:email},
-    { $set: { password: hash } },
-   
+    { email: email },
+    { $set: { password: hash } }
   );
   const user = await User.findById({ _id: userId });
-  sendEmail( user.email, "Password Reset Successfully", { name: user.name, }, "./template/resetPassword.handlebars");
+  sendEmail(
+    user.email,
+    "Password Reset Successfully",
+    { name: user.name },
+    "./template/resetPassword.handlebars"
+  );
   return true;
 };
 

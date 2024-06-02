@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import { ClipLoader } from 'react-spinners';
 import "react-datepicker/dist/react-datepicker.css";
 import bookingService from "../../services/bookingService";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import userService from "../../services/userService";
 import disableDateService from "../../services/disableDateService";
@@ -146,7 +146,6 @@ export const AddBooking = ({ isOpen, handleClose }) => {
       const [startDay, startMonth, startYear] = start.split('/');
       const [endDay, endMonth, endYear] = end.split('/');
 
-    
       if (
         date.getMonth() === parseInt(startMonth, 10) - 1 && 
         date.getFullYear() === parseInt(startYear, 10) &&
@@ -318,7 +317,6 @@ export const AddBooking = ({ isOpen, handleClose }) => {
           </div>
         </div>
       </div>
-      {/* <ToastContainer /> */}
     </div>
   );
 };

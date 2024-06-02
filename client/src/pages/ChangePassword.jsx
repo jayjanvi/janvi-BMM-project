@@ -15,10 +15,10 @@ export const ChangePassword = ({ show, handleClose }) => {
         confirmPassword: '',
     };
     const [formData, setFormData] = useState(initialFormData);
-       
+
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false); 
-    const [showPassword, setShowPassword] = useState(false); 
+    const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -66,45 +66,41 @@ export const ChangePassword = ({ show, handleClose }) => {
         }
 
         setErrors(newErrors);
-        console.log(formData);
 
         if (Object.keys(newErrors).length === 0) {
-      setLoading(true);
-      try {
-        const user = {
-          userId: JSON.parse(localStorage.getItem('user')).userId,
-          password: formData.newPassword
-        };
-        console.log(user);
-        const response = await authService.changePassword(user);
-        if (response.status === 200) {
-         
-          toast.success("Password changed successfully!");
-          setTimeout(() => {
-            localStorage.setItem("user", JSON.stringify(response.data));
-            handleClose();
-            setFormData(initialFormData);
-            setLoading(false);
-          }, 2000);
-        } else {
-          toast.error("Sorry!!!");
-          setLoading(false);
-        }
-      } catch (error) {
-        toast.error(error.response?.data?.message || "An unexpected error occurred");
-        setLoading(false);
-      }
-    }
-  };
+            setLoading(true);
+            try {
+                const user = {
+                    userId: JSON.parse(localStorage.getItem('user')).userId,
+                    password: formData.newPassword
+                };
+                console.log(user);
+                const response = await authService.changePassword(user);
+                if (response.status === 200) {
 
+                    toast.success("Password changed successfully!");
+                    setTimeout(() => {
+                        localStorage.setItem("user", JSON.stringify(response.data));
+                        handleClose();
+                        setFormData(initialFormData);
+                        setLoading(false);
+                    }, 2000);
+                } else {
+                    toast.error("Sorry!!!");
+                    setLoading(false);
+                }
+            } catch (error) {
+                toast.error(error.response?.data?.message || "An unexpected error occurred");
+                setLoading(false);
+            }
+        }
+    };
 
     const handleModalClose = () => {
         handleClose();
         setFormData(initialFormData);
-        setLoading(false); 
-      };
-
-      
+        setLoading(false);
+    };
 
     return (
         <Modal show={show} onHide={handleModalClose}>
@@ -119,14 +115,14 @@ export const ChangePassword = ({ show, handleClose }) => {
                             name="oldPassword"
                             id="password-field"
                             className="form-control"
-                            type={showPassword ? "text" : "password"} 
+                            type={showPassword ? "text" : "password"}
                             required
                             placeholder="Old Password"
                             value={formData.oldPassword}
                             onChange={handleChange}
                             isInvalid={!!errors.oldPassword} />
                         <span
-                            onClick={togglePasswordVisibility} 
+                            onClick={togglePasswordVisibility}
                             className={`field-icon-passwordCP toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                         ></span>
                         <Form.Control.Feedback type="invalid">{errors.oldPassword}</Form.Control.Feedback>
@@ -144,7 +140,7 @@ export const ChangePassword = ({ show, handleClose }) => {
                             onChange={handleChange}
                             isInvalid={!!errors.newPassword} />
                         <span
-                            onClick={togglePasswordVisibility} 
+                            onClick={togglePasswordVisibility}
                             className={`field-icon-passwordCP toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                         ></span>
                         <Form.Control.Feedback type="invalid">{errors.newPassword}</Form.Control.Feedback>
@@ -155,14 +151,14 @@ export const ChangePassword = ({ show, handleClose }) => {
                             name="confirmPassword"
                             id="password-field"
                             className="form-control"
-                            type={showPassword ? "text" : "password"} 
+                            type={showPassword ? "text" : "password"}
                             required
                             placeholder="Confirm Password"
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             isInvalid={!!errors.ChangePassword} />
                         <span
-                            onClick={togglePasswordVisibility} 
+                            onClick={togglePasswordVisibility}
                             className={`field-icon-passwordCP toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                         ></span>
                         <Form.Control.Feedback type="invalid">{errors.confirmPassword}</Form.Control.Feedback>
@@ -174,7 +170,7 @@ export const ChangePassword = ({ show, handleClose }) => {
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleSubmit}>
-                {loading ? (
+                    {loading ? (
                         <ClipLoader color={'#ffffff'} loading={loading} size={25} />
                     ) : (
                         "Change"

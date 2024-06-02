@@ -2,13 +2,12 @@ const {
   addUserService,
   getAllUsers,
   findUsers,
-  deleteUserById
+  deleteUserById,
 } = require("../services/user-service");
 
 const addUser = async (req, res) => {
   const signupService = await addUserService(req.body);
   return res.json(signupService);
-
 };
 
 const userList = async (req, res) => {
@@ -30,5 +29,5 @@ module.exports = {
   addUser,
   userList,
   searchUsers,
-  deleteUser
+  deleteUser,
 };

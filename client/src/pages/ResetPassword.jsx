@@ -3,9 +3,8 @@ import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import { ClipLoader } from 'react-spinners';
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
@@ -63,7 +62,6 @@ export const ResetPassword = () => {
 
     if (Object.keys(newErrors).length === 0) {
       try {
-       
         const body = {
           token: token,
           userId: userId,
@@ -74,9 +72,9 @@ export const ResetPassword = () => {
         if (response.status === 200) {
           toast.success("Password successfully changed!");
           setTimeout(() => {
-          setLoading(false);
-          navigate('/login');
-        }, 2000);
+            setLoading(false);
+            navigate('/login');
+          }, 2000);
         } else {
           toast.error(response.data.message);
         }
@@ -84,10 +82,10 @@ export const ResetPassword = () => {
         console.error('Error:', error);
         toast.error('An error occurred. Please try again later.');
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     } else {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -98,26 +96,26 @@ export const ResetPassword = () => {
         <div className="login-content-rt">
           <div className="login-box">
             <Form >
-            <div className="logo-wrapper">
-              <img src="src/assets/images/logo.svg" alt="Rishabh Software" />
-              <span>Meal Facility</span>
-            </div>
-            <h3 className="login-head">Reset Password</h3>
-         
+              <div className="logo-wrapper">
+                <img src="src/assets/images/logo.svg" alt="Rishabh Software" />
+                <span>Meal Facility</span>
+              </div>
+              <h3 className="login-head">Reset Password</h3>
+
               <Form.Group className="mb-3" >
                 <Form.Label>New Password</Form.Label>
                 <Form.Control
                   name="newPassword"
                   id="password-field"
                   className="form-control"
-                  type={showPassword ? "text" : "password"} 
+                  type={showPassword ? "text" : "password"}
                   required
                   placeholder="New Password"
                   value={formData.newPassword}
                   onChange={handleChange}
                   isInvalid={!!errors.newPassword} />
                 <span
-                  onClick={togglePasswordVisibility} 
+                  onClick={togglePasswordVisibility}
                   className={`field-icon-password toggle-password ${showPassword ? 'icon-eye-open' : 'icon-eye-close'}`}
                 ></span>
                 <Form.Control.Feedback type="invalid">{errors.newPassword}</Form.Control.Feedback>
@@ -143,7 +141,7 @@ export const ResetPassword = () => {
             </Form>
             <div className="form-group btn-container">
               <button className="btn btn-xl btn-primary" onClick={handleSubmit} disabled={loading}>
-              {loading ? (
+                {loading ? (
                   <ClipLoader color={'#ffffff'} loading={loading} size={25} />
                 ) : (
                   "Submit"
@@ -153,7 +151,6 @@ export const ResetPassword = () => {
           </div>
         </div>
       </section>
-      {/* <ToastContainer /> */}
     </>
   );
 };

@@ -32,7 +32,6 @@ const createBooking = async (data) => {
 
       if (data.employee.length !== 0) {
         for (const employeeId of data.employee) {
-
           let existingBooking = await Booking.findOne({
             employee: employeeId,
             mealType: data.mealType,
@@ -42,7 +41,6 @@ const createBooking = async (data) => {
           });
 
           if (existingBooking) {
-           
             const combinedDays = Array.from(
               new Set([...existingBooking.days, ...days])
             );
@@ -51,7 +49,6 @@ const createBooking = async (data) => {
             existingBooking.bookingCount = combinedDays.length;
             await existingBooking.save();
           } else {
-           
             const bookingData = {
               ...data,
               days: days,
@@ -115,9 +112,8 @@ const createBooking = async (data) => {
         // Process bookings for employees
         if (data.employee.length !== 0) {
           for (const employeeId of data.employee) {
-           
             let existingBooking = await Booking.findOne({
-              employee: employeeId, 
+              employee: employeeId,
               mealType: data.mealType,
               month: month,
               year: year,
@@ -125,7 +121,6 @@ const createBooking = async (data) => {
             });
 
             if (existingBooking) {
-             
               const combinedDays = Array.from(
                 new Set([...existingBooking.days, ...days])
               );
@@ -321,7 +316,6 @@ const getAllBookings = async (data) => {
   }
 };
 async function getBookingsDetailsForNonEmployee(bookings, date) {
-  const bookingObjs = [];
   const month = date.split("-")[0];
   const year = date.split("-")[1];
 
@@ -329,11 +323,6 @@ async function getBookingsDetailsForNonEmployee(bookings, date) {
     return booking.month === month && booking.year === Number(year);
   });
   return filteredBookings;
-}
-
-function formatDateList(dateString) {
-  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-  return new Date(dateString).toLocaleDateString("en-GB", options);
 }
 
 async function getBookingsDetailsForEmployee(bookings, date) {
@@ -395,7 +384,7 @@ const getBusinessDays = async (startDate, endDate) => {
   const disableDates = await getAllDiasbleDates();
   while (current <= end) {
     // Check if the current day is not a weekend (Saturday or Sunday)
-    if (await isWeekdayWithHolidays(current,disableDates)) {
+    if (await isWeekdayWithHolidays(current, disableDates)) {
       dates.push(current.getDate());
     }
     current.setDate(current.getDate() + 1);
@@ -403,16 +392,16 @@ const getBusinessDays = async (startDate, endDate) => {
   return dates;
 };
 
-const isWeekdayWithHolidays = async (date,disableDates) => {
+const isWeekdayWithHolidays = async (date, disableDates) => {
   const day = date.getDay();
   // Check if the date falls on a weekend (Saturday or Sunday)
   if (day === 0 || day === 6) {
     return false; // Disable weekends
   }
-  return !await isHoliday(date,disableDates); // Check if it's a holiday
+  return !(await isHoliday(date, disableDates)); // Check if it's a holiday
 };
 
-const isHoliday = async (date,disableDates) => {
+const isHoliday = async (date, disableDates) => {
   for (const holiday of disableDates) {
     const [start, end] = holiday.date.split("-");
     const [startDay, startMonth, startYear] = start.split("/");

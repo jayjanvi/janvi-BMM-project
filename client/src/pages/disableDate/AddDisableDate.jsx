@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -14,9 +14,7 @@ export const AddDisableDate = ({ show, handleClose }) => {
         startDate: '',
         endDate: '',
         reason: '',
-        
     };
-
     const [formData, setFormData] = useState(initialFormData);
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -26,13 +24,13 @@ export const AddDisableDate = ({ show, handleClose }) => {
 
     useEffect(() => {
         fetchDisableDate();
-      }, []);
-    
-      const fetchDisableDate = async () => {
+    }, []);
+
+    const fetchDisableDate = async () => {
         const response = await disableDateService.disableDateList();
         console.log('res', response);
         setDisableDates(response.data);
-      }
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -42,11 +40,8 @@ export const AddDisableDate = ({ show, handleClose }) => {
         });
     };
 
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         let newErrors = {};
         if (!formData.reason) {
             newErrors.reason = 'Reason is required';
@@ -64,14 +59,13 @@ export const AddDisableDate = ({ show, handleClose }) => {
             try {
                 const response = await disableDateService.addDisableDate(formData);
                 if (response.status === 200) {
-                     toast.success("Disable date added successfully!");
                     setTimeout(() => {
                         handleModalClose();
                         setFormData(initialFormData);
                         window.location.reload();
                         setLoading(false);
                     }, 2000)
-                    toast.success("Disable added successfully");
+                    toast.success("Disable date added successfully");
                 } else {
                     toast.error("Sorry! disable date not created");
                     setLoading(false);
@@ -95,40 +89,32 @@ export const AddDisableDate = ({ show, handleClose }) => {
         setErrors({});
     };
 
-
-    // const isWeekday = (date) => {
-    //     const day = date.getDay();
-    //     return day !== 0 && day !== 6; // Sunday = 0, Saturday = 6
-    // };
-
     const isWeekdayWithHolidays = (date) => {
         console.log('disableDates', disableDates);
         const day = date.getDay();
         // Check if the date falls on a weekend (Saturday or Sunday)
         if (day === 0 || day === 6) {
-          return false; // Disable weekends
+            return false; // Disable weekends
         }
         return isHoliday(date);
-      };
-    
-      const isHoliday = date => {
-       
+    };
+
+    const isHoliday = date => {
         for (const holiday of disableDates) {
-           const [start, end] = holiday.date.split('-');
-          const [startDay, startMonth, startYear] = start.split('/');
-          const [endDay, endMonth, endYear] = end.split('/');
-        if (
-            date.getMonth() === parseInt(startMonth, 10) - 1 && 
-            date.getFullYear() === parseInt(startYear, 10) &&
-            date.getDate() >= parseInt(startDay, 10) &&
-            date.getDate() <= parseInt(endDay, 10)
-          ) {
-            return false; 
-          }
+            const [start, end] = holiday.date.split('-');
+            const [startDay, startMonth, startYear] = start.split('/');
+            const [endDay, endMonth, endYear] = end.split('/');
+            if (
+                date.getMonth() === parseInt(startMonth, 10) - 1 &&
+                date.getFullYear() === parseInt(startYear, 10) &&
+                date.getDate() >= parseInt(startDay, 10) &&
+                date.getDate() <= parseInt(endDay, 10)
+            ) {
+                return false;
+            }
         }
         return true;
-      };
-
+    };
 
     return (
         <Modal show={show} onHide={handleModalClose}>
@@ -140,7 +126,6 @@ export const AddDisableDate = ({ show, handleClose }) => {
                     <div className="form-group">
                         <label>Select Date (s)</label>
                         <div className="input-group date-picker-input">
-
                             <DatePicker
                                 startDate={startDate}
                                 id={"datepicker-input"}
@@ -159,15 +144,12 @@ export const AddDisableDate = ({ show, handleClose }) => {
                                 dateFormat="dd-MM-yyyy"
                                 minDate={new Date()}
                                 filterDate={isWeekdayWithHolidays}
-                              
                                 placeholderText="Select Date Range"
                                 className="form-control border-right-0 datepicker-icn" />
-
                             <div className="input-group-append bg-transparent">
                             </div>
                         </div>
                     </div>
-
                     <div className="form-group">
                         <label>Reason</label>
                         <input type="text"
@@ -178,7 +160,6 @@ export const AddDisableDate = ({ show, handleClose }) => {
                             onChange={handleChange} />
                         {errors.reason && <div className="text-danger">{errors.reason}</div>}
                     </div>
-
                 </Form>
             </Modal.Body>
             <Modal.Footer>
@@ -194,6 +175,5 @@ export const AddDisableDate = ({ show, handleClose }) => {
                 </Button>
             </Modal.Footer>
         </Modal>
-
     );
 };

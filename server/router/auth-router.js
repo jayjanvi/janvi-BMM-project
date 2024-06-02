@@ -9,7 +9,9 @@ const validate = require("../middlewares/validate-middleware");
 
 // Authentication
 router.route("/login").post(authControllers.login);
-router.route("/forgotPassword").post(authControllers.resetPasswordRequestController);
+router
+  .route("/forgotPassword")
+  .post(authControllers.resetPasswordRequestController);
 router.route("/resetPassword").post(authControllers.resetPasswordController);
 router.route("/changePassword").post(authControllers.changePasswordController);
 

@@ -6,7 +6,6 @@ const { getUserById } = require("./user-service");
 // add disable date
 const addDisableDates = async (data) => {
   try {
-
     const filteredBookings = await filterBookings(data.startDate, data.endDate);
 
     for (const booking of filteredBookings) {
@@ -46,16 +45,12 @@ const removeDaysFromBooking = async (booking, startDateStr, endDateStr) => {
   const endDay = endDate.getDate();
 
   try {
-
     // Filter out the days that fall within the date range
     booking.days = booking.days.filter((day) => day < startDay || day > endDay);
 
     if (booking.days.length === 0) {
       // delete booking if there are no any days
-      await Booking.updateMany(
-        { _id: booking._id },
-        { isDeleted: true }
-      );
+      await Booking.updateMany({ _id: booking._id }, { isDeleted: true });
     } else {
       // Save the updated booking
       await booking.save();
@@ -116,9 +111,6 @@ const getAllDiasbleDates = async () => {
       newDates.push(newDate);
     }
 
-    // if (!dates || dates.length === 0) {
-    //   throw new Error("No Dates found!", 404);
-    // }
     return newDates;
   } catch (error) {
     throw new Error(error, 500);

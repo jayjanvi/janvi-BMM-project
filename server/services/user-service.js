@@ -1,11 +1,10 @@
 const Booking = require("../models/booking-model");
 const User = require("../models/user-model");
 const sendEmail = require("../utils/email/sendEmail");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // User Registration
 const addUserService = async (data) => {
-
   try {
     const { username, email, password } = data;
 
@@ -42,7 +41,7 @@ const addUserService = async (data) => {
 
 const getAllUsers = async () => {
   try {
-    const users = await User.find({isDeleted: false});
+    const users = await User.find({ isDeleted: false });
     // const users = await User.find();
     if (!users || users.length === 0) {
       throw new Error("No users found!", 404);
@@ -57,7 +56,7 @@ async function findUsers(query) {
   try {
     const users = await User.find({
       $and: [
-        {isDeleted: false},
+        { isDeleted: false },
         { isEmployee: true }, // isEmployee is true condition
         {
           $or: [
@@ -98,10 +97,7 @@ const deleteUserById = async (userId) => {
       { $set: { isDeleted: true } }
     );
 
-    result = await User.updateMany(
-      { _id: userId },
-      { isDeleted: true }
-    );
+    result = await User.updateMany({ _id: userId }, { isDeleted: true });
 
     if (result.nModified === 0) {
       throw new Error("No users found for this employee");
@@ -112,12 +108,10 @@ const deleteUserById = async (userId) => {
   }
 };
 
-
-
 module.exports = {
   addUserService,
   getAllUsers,
   getUserById,
   findUsers,
-  deleteUserById
+  deleteUserById,
 };

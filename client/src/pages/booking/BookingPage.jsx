@@ -101,20 +101,22 @@ export const BookingPage = () => {
   };
 
   const handleSearchInputChange = (e) => {
-    // fetchBooking(e.target.value.toLowerCase());
     setSearchQuery(e.target.value.toLowerCase());
   };
 
   const getFilteredBookings = () => {
-    if (!bookingResponse) return [];
-    return bookingResponse.data.filter(booking => 
-      // booking.empCode?.toLowerCase().includes(searchQuery) ||
-      booking.empName.toLowerCase().includes(searchQuery) ||
-      booking.department.toLowerCase().includes(searchQuery) ||
-      booking.mealType?.toLowerCase?.().includes(searchQuery)
+    if (!bookingResponse || !bookingResponse.data) return [];
+
+    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+
+    return bookingResponse.data.filter(booking =>
+      (booking.empName && booking.empName.toLowerCase().includes(lowerCaseSearchQuery)) ||
+      (booking.department && booking.department.toLowerCase().includes(lowerCaseSearchQuery)) ||
+      (booking.mealType && booking.mealType.toLowerCase().includes(lowerCaseSearchQuery)) ||
+      (booking.bookingCategory && booking.bookingCategory.toLowerCase().includes(lowerCaseSearchQuery))
+
     );
   };
-
 
   return (
     <>
@@ -143,14 +145,13 @@ export const BookingPage = () => {
           </a>
         </div>
         <div className="left-aligned-content">
-            <input
-              className="search-booking"
-              type="text"
-              placeholder="Search Booking"
-              value={searchQuery}
-              onChange={handleSearchInputChange}
-
-            />
+          <input
+            className="search-booking"
+            type="text"
+            placeholder="Search Booking"
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+          />
 
           <div className="tooltip-container">
             <TiExport size={28} onClick={downloadExcel} />
@@ -159,9 +160,9 @@ export const BookingPage = () => {
             </span>
           </div>
 
-
           <select value={selectedMonth} onChange={(e) => handleMonthChange(e)}>
             <option value="">Select Month</option>
+            <option value="all">All Months</option>
             {months.map((month, index) => (
               <option key={index} value={month}>{month}</option>
             ))}
@@ -171,9 +172,7 @@ export const BookingPage = () => {
             <option value="2024">2024</option>
             <option value="2025">2025</option>
             <option value="2026">2026</option>
-
           </select>
-
         </div>
         <ClipLoader margin={5} cssOverride={{ 'marginLeft': '50%', 'marginTop': '2%' }} loading={listLoader} />
         {!showOthers ? <BookingList BookingResponse={{ data: getFilteredBookings() }} handleRefresh={setHandleRefresh} /> : <BookingListOthers BookingResponse={bookingResponse} handleRefresh={setHandleRefresh} />}

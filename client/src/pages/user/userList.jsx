@@ -5,15 +5,14 @@ import userService from "../../services/userService";
 import { MdDelete } from "react-icons/md";
 import { toast } from 'react-toastify';
 import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css"; 
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 export const UserList = ({ userResponse, handleRefresh }) => {
 
-  const [users, setUsers] = useState([]);  
+  const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [showOthers, setShowOthers] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
     if (userResponse) {
@@ -33,17 +32,6 @@ export const UserList = ({ userResponse, handleRefresh }) => {
       setShowOthers(false);
     }
   };
-
-  // const sortedUsers = users.sort((a, b) => {
-  //   if (!sortConfig) {
-  //     return 0;
-  //   }
-  //   const key = sortConfig.key;
-  //   const direction = sortConfig.direction === 'asc' ? 1 : -1;
-  //   if (a[key] < b[key]) return -1 * direction;
-  //   if (a[key] > b[key]) return 1 * direction;
-  //   return 0;
-  // });
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -89,7 +77,7 @@ export const UserList = ({ userResponse, handleRefresh }) => {
           Others
         </a>
       </div>
-      <Table hover className="table-custom">
+      <Table style={{ border: 1 }} hover className="table-custom">
         <thead>
           <tr>
             <th>No.</th>
@@ -108,12 +96,17 @@ export const UserList = ({ userResponse, handleRefresh }) => {
               <td>{user.email}</td>
               <td>{user.phone}</td>
               {!showOthers && <td>{user.department}</td>}
-              <td><i style={{ cursor: 'pointer', color:'red' }} onClick={() => deleteUsers(user._id)}><MdDelete size={18} /></i></td>
+              <td><i style={{ cursor: 'pointer', color: 'red' }} onClick={() => deleteUsers(user._id)}><MdDelete size={18} /></i></td>
             </tr>
           ))}
-          
+
         </tbody>
       </Table>
+      {currentUsers.length === 0 ?
+        <div style={{ color: 'red', fontSize: '18px', fontWeight: 'bold', textAlign: 'center', marginTop: '20px' }}>
+          <h5>No User found!</h5>
+        </div>
+        : ""}
       <div className="d-flex justify-content-end">
         <Pagination>
           <Pagination.Prev
