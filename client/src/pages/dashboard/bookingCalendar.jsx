@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import bookingService from '../../services/bookingService';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
+import disableDateService from "../../services/disableDateService";
 
 const localizer = momentLocalizer(moment)
 
@@ -25,6 +26,7 @@ export const BookingCalendar = () => {
   const [bookings, setBookings] = useState(null);
   const [events, setEvents] = useState([]);
   const [counts, setCounts] = useState({ employee: 0, nonemployee: 0, customBooking: 0 });
+  const [disableDates, setDisableDates] = useState([]);
 
   const handleSelectSlot = (slotInfo) => {
     setSelectedDay(slotInfo.start);
@@ -47,6 +49,7 @@ export const BookingCalendar = () => {
 
   useEffect(() => {
     bookings && setEvents(createEventsFromBookings(bookings));
+    fetchDisableDates();
   }, [bookings]);
 
   useEffect(() => {
@@ -98,9 +101,38 @@ export const BookingCalendar = () => {
     setBookings(bookings.data);
   }
 
+  const parseDate = dateString => {
+    const [start, end] = dateString.split('-');
+    return {
+      start: moment(start, 'DD/MM/YYYY').toDate(),
+      end: moment(end, 'DD/MM/YYYY').toDate()
+    };
+  };
+
+  const fetchDisableDates = async () => {
+    try {
+      const response = await disableDateService.disableDateList();
+      const disabledDates = response.data.map(item => parseDate(item.date))
+      setDisableDates(disabledDates);
+    } catch (error) {
+      console.error('Error fetching disable dates:', error);
+    }
+  };
+
+  const isDisabled = date => {
+    return disableDates.some(disabledDate =>
+      date >= disabledDate.start && date <= disabledDate.end
+    );
+  };
+
   const customSlotPropGetter = (date) => {
     if (selectedDay && date.toDateString() === selectedDay.toDateString()) {
       return { style: { backgroundColor: 'lightblue', }, };
+    }
+    if (isDisabled(date)) {
+      return {
+        className: 'disabled-date'
+      };
     }
     return {};
   };

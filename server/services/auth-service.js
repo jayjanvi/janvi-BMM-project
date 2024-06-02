@@ -1,4 +1,3 @@
-const JWT = require("jsonwebtoken");
 const User = require("../models/user-model");
 const Token = require("../models/token-model");
 const sendEmail = require("../utils/email/sendEmail");
@@ -61,7 +60,7 @@ const requestPasswordReset = async (email) => {
   sendEmail(
     user.email,
     "Password Reset Request",
-    { name: user.name, link: link },
+    { name: user.username, link: link },
     "./template/requestResetPassword.handlebars"
   );
   return link;
@@ -86,7 +85,7 @@ const resetPassword = async (userId, token, password) => {
   sendEmail(
     user.email,
     "Password Reset Successfully",
-    { name: user.name },
+    { name: user.username },
     "./template/resetPassword.handlebars"
   );
   await passwordResetToken.deleteOne();
@@ -104,7 +103,7 @@ const changePassword = async (userId, password) => {
   sendEmail(
     user.email,
     "Password Reset Successfully",
-    { name: user.name, changedPassword: password },
+    { name: user.username, changedPassword: password },
     "./template/resetPassword.handlebars"
   );
   return true;
@@ -121,7 +120,7 @@ const forgotPassword = async (userId, email) => {
   sendEmail(
     user.email,
     "Password Reset Successfully",
-    { name: user.name },
+    { name: user.username },
     "./template/resetPassword.handlebars"
   );
   return true;

@@ -37,7 +37,6 @@ export const ForgotPassword = () => {
       if (response.status === 200) {
         localStorage.setItem("user", JSON.stringify(response.data));
         setTimeout(() => {
-
           toast.success('Password reset instructions sent to your email.');
           setLoading(false);
         }, 2000);
@@ -46,8 +45,12 @@ export const ForgotPassword = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred. Please try again later.');
+      console.error('Error:', error.response.data.message);
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('An error occurred. Please try again later.');
+      }
       setLoading(false);
     }
   };

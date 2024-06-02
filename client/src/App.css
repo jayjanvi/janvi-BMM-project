@@ -13226,10 +13226,16 @@ img {
   
 }
 
+.disabled-date {
+  background-color: #f2f2f2;
+  color: #999;
+}
+
 .search-booking{
-  /* Aligns content to the right */
+  position: absolute;
+  left: 1%;
   padding: 10px;
- margin-right: 800px;
+ margin-right: 50%;
  width:270px;
  border-radius: 6px;
 }
