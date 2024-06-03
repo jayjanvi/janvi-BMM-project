@@ -1,4 +1,4 @@
-<html>
+{{!-- <html>
     <head>
         <style>
 
@@ -12,4 +12,49 @@
         {{bookingType}}: {{startDate}} to {{endDate}}
     </div>        
     </body>
+</html> --}}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .details {
+            border: dashed 1px grey;
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-top: 20px;
+        }
+        .details p {
+            margin: 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>Hello {{name}},</p>
+        <p>Thank you for using Meal App to book your meal.</p>
+        <p>Here are your booking details:</p>
+        <div class="details">
+            <p>{{bookingType}}: {{startDate}} to {{endDate}}</p>
+        </div>
+        <p>If you have any questions or need to make changes to your booking, please contact our support team.</p>
+        <p>Thank you for choosing Meal App!</p>
+        <p>Best regards,</p>
+        <p>The Meal App Team</p>
+    </div>
+</body>
 </html>
