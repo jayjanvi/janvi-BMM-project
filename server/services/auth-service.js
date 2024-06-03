@@ -21,12 +21,21 @@ const loginUser = async (data) => {
     if (passwordMatch) {
       // Check if the user is an admin
       if (userExist.isAdmin) {
+        const token = await userExist.generateToken();
+
+        // Store the token in the database
+        const tokenDoc = new Token({
+          userId: userExist._id,
+          token,
+        });
+        await tokenDoc.save();
+
         return {
           message: "Login Successful",
           username: userExist.username,
           userId: userExist._id.toString(),
-          token: await userExist.generateToken(),
           password: userExist.password,
+          token
         };
       } else {
         throw new Error("You are not authorized to login as an admin", 403);

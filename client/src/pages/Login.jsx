@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AuthService from "../services/authService";
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
+import { decodeToken } from "react-jwt";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -32,13 +33,32 @@ export const Login = () => {
     navigate("/forgotPassword");
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogout = () => {
+    AuthService.logout();
+    navigate("/login");
+  };
+
+  const handleLogin = async (e) => {
     try {
       e.preventDefault();
       setLoading(true);
       const response = await AuthService.login(user);
       if (response.status === 200) {
+
+        const { token, userId, username } = response.data;
+
         localStorage.setItem("user", JSON.stringify(response.data));
+
+        const myDecodedToken = decodeToken(token);
+
+        const expirationTime = myDecodedToken.exp * 1000 - Date.now();
+
+        // Set timeout to log out user when token expires
+        setTimeout(() => {
+          alert('Session expired. Please log in again.');
+          handleLogout();
+        }, expirationTime);
+
         navigate("/");
       } else {
         toast.error("You are not registered to this service");
@@ -61,7 +81,7 @@ export const Login = () => {
       <div className="login-content-lt"></div>
       <div className="login-content-rt">
         <div className="login-box">
-          <form className="login-form" onSubmit={handleSubmit}>
+          <form className="login-form" onSubmit={handleLogin}>
             <div className="logo-wrapper">
               <img src="src/assets/images/logo.svg" alt="Rishabh Software" />
               <span>Meal Facility</span>
