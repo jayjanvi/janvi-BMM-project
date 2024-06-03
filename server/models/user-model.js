@@ -110,13 +110,15 @@ userSchema.methods.generateToken = async function () {
       },
       process.env.JWT_SECRET_KEY,
       {
-        expiresIn: "1m",
+        expiresIn: '1h',
       }
     );
   } catch (error) {
     console.error("Token Error: ", error);
   }
 };
+
+
 
 const User = new mongoose.model("User", userSchema);
 module.exports = User;

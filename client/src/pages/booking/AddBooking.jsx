@@ -115,6 +115,12 @@ export const AddBooking = ({ isOpen, handleClose }) => {
       return;
     }
 
+    if (!formData.mealType) {
+      toast.error("Please select a meal type.");
+      setLoading(false);
+      return;
+    }
+
     bookingService.addBooking(formData)
       .then(response => {
         setTimeout(() => {

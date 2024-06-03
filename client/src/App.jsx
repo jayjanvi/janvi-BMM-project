@@ -19,8 +19,8 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<PrivateRoute pageLoad="home" />} />
           <Route path="/user" element={<PrivateRoute pageLoad="user" />} />
-          <Route path="/disableDate" element={<DisableDateList />} />
-          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/disableDate" element={<PrivateRoute pageLoad="disableDate"  />} />
+          <Route path="/booking" element={<PrivateRoute pageLoad="booking" />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/passwordReset" element={<ResetPassword />} />
           <Route path="/*" element={<ErrorPage />} />
